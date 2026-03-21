@@ -1,9 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
-import { useNavigate } from 'react-router-dom';
 
 export default function HeroSection() {
-  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const feeLineRef = useRef<HTMLDivElement>(null);
   const subtitleLineRef = useRef<HTMLDivElement>(null);
@@ -148,7 +146,7 @@ export default function HeroSection() {
         {/* CTA */}
         <div ref={ctaRef} className="mt-7">
           <button className="font-syne font-semibold text-[14px] text-white h-[46px] px-[26px] rounded-[9px] transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.97]" style={{ background: 'hsl(213 60% 56%)', border: '1px solid hsla(213,60%,56%,0.35)', boxShadow: 'none' }}
-            onClick={() => navigate('/analyze')}
+            onClick={() => window.location.assign('/analyze')}
             onMouseEnter={(e) => { (e.target as HTMLElement).style.boxShadow = '0 6px 24px hsla(213,60%,56%,0.25)'; }}
             onMouseLeave={(e) => { (e.target as HTMLElement).style.boxShadow = 'none'; }}
           >

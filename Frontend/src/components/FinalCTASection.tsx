@@ -1,10 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useNavigate } from 'react-router-dom';
 
 export default function FinalCTASection() {
-  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -40,7 +37,7 @@ export default function FinalCTASection() {
         <button
           className="font-syne font-semibold text-[14px] text-white h-[46px] px-[26px] rounded-[9px] transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.97]"
           style={{ background: 'hsl(213 60% 56%)', border: '1px solid hsla(213,60%,56%,0.35)' }}
-          onClick={() => navigate('/analyze')}
+          onClick={() => window.location.assign('/analyze')}
         >
           Analyze My Portfolio — Free
         </button>

@@ -1,6 +1,5 @@
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LineChart, Line, ResponsiveContainer, CartesianGrid, RadialBarChart, RadialBar } from 'recharts';
 
 const wealthData = [
