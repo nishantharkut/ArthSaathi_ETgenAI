@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
-  const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
   const [counter, setCounter] = useState(28538);
   const counterRef = useRef<HTMLSpanElement>(null);
@@ -73,11 +71,14 @@ export default function Navbar() {
         ref={wordmarkRef}
         className="font-fraunces text-text-primary text-sm cursor-pointer"
         style={{ fontVariationSettings: "'opsz' 72, 'wght' 700" }}
-        onClick={() => navigate('/')}
+        onClick={() => window.location.assign('/')}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') navigate('/');
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            window.location.assign('/');
+          }
         }}
       >
         ArthSaathi
@@ -93,7 +94,7 @@ export default function Navbar() {
       <button
         ref={btnRef}
         className="font-syne font-semibold text-[13px] bg-accent text-white h-[34px] px-4 rounded-[7px] transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97]"
-        onClick={() => navigate('/analyze')}
+        onClick={() => window.location.assign('/analyze')}
       >
         Analyze Portfolio
       </button>

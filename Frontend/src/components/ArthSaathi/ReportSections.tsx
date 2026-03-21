@@ -36,7 +36,7 @@ export function ReportSections({ topSlot, footerLabel, showFallbacks }: ReportSe
 
   return (
     <div className="animate-reveal">
-      <div className="max-w-[1120px] mx-auto px-4 pt-4">{topSlot}</div>
+      {topSlot ? <div className="max-w-[1120px] mx-auto px-4 pt-4">{topSlot}</div> : null}
 
       <div className="pt-6 pb-2 text-center">
         <h1 className="font-display text-2xl font-bold text-primary-light">ArthSaathi</h1>
