@@ -81,8 +81,8 @@ export interface AnalysisData {
     };
   }>;
   overlap_analysis: {
-    max_pairwise_overlap: number;
-    overlap_level: string;
+    max_pairwise_overlap: number | null;
+    overlap_level: string | null;
     matrix: Array<{
       fund_a: string;
       fund_b: string;
