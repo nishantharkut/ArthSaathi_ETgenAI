@@ -1,11 +1,8 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas-pro';
 
-/** Multi-page PDF from report DOM — FEATURES_BUILD_SPEC.md §F6 */
+/** Multi-page PDF from the report DOM. Callers should expand any Radix collapsibles before capture if needed. */
 export async function exportReportPdf(element: HTMLElement, investorName: string): Promise<void> {
-  const collapsed = element.querySelectorAll('[data-state="closed"]');
-  collapsed.forEach((el) => el.setAttribute('data-state', 'open'));
-
   const canvas = await html2canvas(element, {
     scale: 2,
     useCORS: true,
@@ -13,8 +10,6 @@ export async function exportReportPdf(element: HTMLElement, investorName: string
     logging: false,
     windowWidth: 1120,
   });
-
-  collapsed.forEach((el) => el.setAttribute('data-state', 'closed'));
 
   const imgData = canvas.toDataURL('image/jpeg', 0.92);
   const pdf = new jsPDF({

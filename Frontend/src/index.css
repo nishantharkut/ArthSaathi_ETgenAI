@@ -286,7 +286,7 @@
   from { width: 0; }
 }
 
-/* @xyflow/react — FEATURES_BUILD_SPEC.md §F8 */
+/* @xyflow/react — Agent DAG (live + static pipeline) */
 .react-flow__background {
   background: transparent !important;
 }

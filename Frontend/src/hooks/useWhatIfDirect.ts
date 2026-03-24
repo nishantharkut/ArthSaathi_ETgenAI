@@ -1,10 +1,15 @@
 import { useMemo } from 'react';
 import type { AnalysisData } from '@/types/analysis';
 
+/** Backend (`cost.py`) stores TER as a fraction (e.g. 0.018); if a value > 1 slipped in as a percent, normalize. */
+function expenseTerAsFraction(ter: number): number {
+  if (ter > 1) return ter / 100;
+  return ter;
+}
+
 /**
  * Recalculate AnalysisData as if all regular plans used direct-plan TERs.
- * Uses per-fund direct_plan_ter from the API payload — no network calls.
- * @see FEATURES_BUILD_SPEC.md §F2
+ * Uses per-fund direct_plan_ter from the API (fractional TER, same as `cost.py`).
  */
 export function useWhatIfDirect(original: AnalysisData, enabled: boolean): AnalysisData {
   return useMemo(() => {
@@ -24,7 +29,7 @@ export function useWhatIfDirect(original: AnalysisData, enabled: boolean): Analy
         return fund;
       }
 
-      const directTer = fund.expense.direct_plan_ter;
+      const directTer = expenseTerAsFraction(fund.expense.direct_plan_ter);
       const xirr = fund.xirr?.rate ?? 0.1;
       const cv = fund.current_value;
 
@@ -105,7 +110,7 @@ export function useWhatIfDirect(original: AnalysisData, enabled: boolean): Analy
       assumptions: {
         current_xirr: Math.round(newCurrentXirr * 10000) / 10000,
         optimised_xirr: Math.round(newOptimisedXirr * 10000) / 10000,
-        ter_savings_applied: 0,
+        ter_savings_applied: Math.round(terSavingsRate * 10000) / 10000,
         alpha_improvement_applied: origAlpha,
       },
     };

@@ -87,6 +87,8 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
       )
     : 0;
 
+  const yearlyRoadmap = result?.yearly_roadmap ?? result?.monthly_roadmap;
+
   return (
     <div className="card-arth p-6 border border-white/10">
       <button
@@ -223,13 +225,13 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
                 ))}
               </ul>
 
-              {result.monthly_roadmap && result.monthly_roadmap.length > 0 ? (
+              {yearlyRoadmap && yearlyRoadmap.length > 0 ? (
                 <div className="mt-4 h-56 w-full">
                   <p className="font-body text-[11px] mb-2" style={{ color: "hsl(var(--text-tertiary))" }}>
                     Illustrative corpus path (yearly)
                   </p>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={result.monthly_roadmap} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                    <LineChart data={yearlyRoadmap} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                       <XAxis dataKey="year" tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 10 }} />
                       <YAxis
                         tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 10 }}

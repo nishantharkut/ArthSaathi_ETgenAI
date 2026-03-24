@@ -57,6 +57,9 @@ export function ReportSections({
 }: ReportSectionsProps) {
   const [whatIfEnabled, setWhatIfEnabled] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
+  const [pipelineOpen, setPipelineOpen] = useState(false);
+  /** Radix Collapsible unmounts closed content; expand during PDF capture so html2canvas sees it. */
+  const [pdfExpandCollapsibles, setPdfExpandCollapsibles] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const data = useWhatIfDirect(originalData, whatIfEnabled);
   const wealthChart = normalizeWealthProjectionForChart(data.wealth_projection);
@@ -65,9 +68,12 @@ export function ReportSections({
     const el = reportRef.current;
     if (!el || pdfBusy) return;
     setPdfBusy(true);
+    setPdfExpandCollapsibles(true);
+    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
     try {
       await exportReportPdf(el, data.investor.name);
     } finally {
+      setPdfExpandCollapsibles(false);
       setPdfBusy(false);
     }
   }, [data.investor.name, pdfBusy]);
@@ -164,7 +170,13 @@ export function ReportSections({
             aiGenerated={data.rebalancing_plan.ai_generated}
           />
 
-          <Collapsible defaultOpen={false} className="group card-arth border border-white/10 overflow-hidden">
+          <Collapsible
+            open={pdfExpandCollapsibles || pipelineOpen}
+            onOpenChange={(o) => {
+              if (!pdfExpandCollapsibles) setPipelineOpen(o);
+            }}
+            className="group card-arth border border-white/10 overflow-hidden"
+          >
             <CollapsibleTrigger
               type="button"
               className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left transition-colors hover:bg-white/[0.03]"

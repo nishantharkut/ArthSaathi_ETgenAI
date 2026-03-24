@@ -108,17 +108,18 @@ def compute_goal(
         )
 
     forward_rate = r
-    monthly_roadmap: list[dict[str, Any]] = []
+    monthly_growth_rate = ((1 + forward_rate) ** (1 / 12)) - 1
+    # Year-end snapshots (monthly compounding loop; one point per year)
+    yearly_roadmap: list[dict[str, Any]] = []
     if years_remaining > 0:
         running_corpus = portfolio_value
         monthly_sip = monthly_sip_possible
         for month in range(1, years_remaining * 12 + 1):
             running_corpus += monthly_sip
-            monthly_growth = ((1 + forward_rate) ** (1 / 12)) - 1
-            running_corpus *= 1 + monthly_growth
+            running_corpus *= 1 + monthly_growth_rate
             if month % 12 == 0:
                 year = month // 12
-                monthly_roadmap.append(
+                yearly_roadmap.append(
                     {
                         "year": year,
                         "age": current_age + year,
@@ -128,7 +129,8 @@ def compute_goal(
                     }
                 )
 
-    monthly_expenses_ef = monthly_income * 0.50
+    income_for_emergency = monthly_income if monthly_income > 0 else 50000.0
+    monthly_expenses_ef = income_for_emergency * 0.50
     emergency_target = monthly_expenses_ef * 6
     emergency_fund_check = {
         "target": round(emergency_target),
@@ -183,7 +185,7 @@ def compute_goal(
             ),
         },
         "recommendations": recommendations,
-        "monthly_roadmap": monthly_roadmap,
+        "yearly_roadmap": yearly_roadmap,
         "emergency_fund_check": emergency_fund_check,
         "asset_allocation": asset_allocation,
     }

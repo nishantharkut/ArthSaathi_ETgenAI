@@ -101,7 +101,7 @@ function getLayoutedElements(
   return { nodes: layoutedNodes, edges };
 }
 
-const AgentNode = memo(function AgentNode({ data }: NodeProps<Node<AgentDAGData>>) {
+const AgentNode = memo(function AgentNode({ data }: NodeProps<AgentDAGData>) {
   const statusColors: Record<AgentDAGData["status"], string> = {
     queued: "hsl(var(--bg-tertiary))",
     running: "rgba(59, 130, 246, 0.15)",

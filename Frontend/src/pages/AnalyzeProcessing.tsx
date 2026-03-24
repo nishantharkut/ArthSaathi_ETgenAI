@@ -267,6 +267,7 @@ export default function AnalyzeProcessing() {
             <button
               type="button"
               onClick={() => setViewMode("list")}
+              aria-pressed={viewMode === "list"}
               className="font-body text-xs px-4 py-2 rounded-full border transition-colors"
               style={{
                 borderColor: viewMode === "list" ? "hsl(var(--accent))" : "rgba(255,255,255,0.12)",
@@ -279,6 +280,7 @@ export default function AnalyzeProcessing() {
             <button
               type="button"
               onClick={() => setViewMode("dag")}
+              aria-pressed={viewMode === "dag"}
               className="font-body text-xs px-4 py-2 rounded-full border transition-colors"
               style={{
                 borderColor: viewMode === "dag" ? "hsl(var(--accent))" : "rgba(255,255,255,0.12)",

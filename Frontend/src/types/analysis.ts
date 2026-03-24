@@ -164,6 +164,15 @@ export interface GoalCalculateResponse {
     alternative: string;
   };
   recommendations: string[];
+  /** Year-end corpus snapshots (backend `goals.py`); one row per year. */
+  yearly_roadmap?: Array<{
+    year: number;
+    age: number;
+    corpus: number;
+    corpus_display: string;
+    cumulative_invested: number;
+  }>;
+  /** @deprecated Use `yearly_roadmap` (same shape). */
   monthly_roadmap?: Array<{
     year: number;
     age: number;
