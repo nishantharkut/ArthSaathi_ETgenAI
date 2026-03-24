@@ -195,7 +195,20 @@ const nodeTypes = { agent: AgentNode };
 function FitViewHelper({ signal }: { signal: number }) {
   const { fitView } = useReactFlow();
   useEffect(() => {
-    fitView({ padding: 0.15, duration: 200 });
+    let alive = true;
+    const run = () => {
+      if (alive) {
+        fitView({ padding: 0.2, duration: 220, minZoom: 0.1, maxZoom: 1.5 });
+      }
+    };
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+    const t = window.setTimeout(run, 160);
+    return () => {
+      alive = false;
+      window.clearTimeout(t);
+    };
   }, [fitView, signal]);
   return null;
 }
@@ -289,11 +302,17 @@ export function AgentDAG({
   const fitSignal = mode === "static" ? 1 : events.length;
   const allowPanZoom = mode === "live" || staticInteractive;
 
+  /** React Flow needs a real height (not just min-height); % heights break inside flex parents. */
+  const shellHeight =
+    mode === "static"
+      ? "min-h-0 h-[300px]"
+      : "h-[min(72vh,720px)] min-h-[400px]";
+
   return (
-    <div className={cn("flex flex-col w-full rounded-lg border border-white/[0.06] bg-transparent min-h-[400px]", className)}>
-      <div className="flex-1 min-h-[400px] overflow-hidden">
+    <div className={cn("flex flex-col w-full rounded-lg border border-white/[0.06] bg-transparent", shellHeight, className)}>
+      <div className="flex-1 min-h-0 w-full overflow-hidden">
         <ReactFlowProvider>
-          <div className="h-full w-full min-h-[400px]">
+          <div className="h-full w-full min-h-[320px]">
             <ReactFlow
               nodes={nodes}
               edges={edges}

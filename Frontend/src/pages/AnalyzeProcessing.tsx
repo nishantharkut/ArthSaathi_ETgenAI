@@ -290,7 +290,7 @@ export default function AnalyzeProcessing() {
           {viewMode === "list" ? (
             <AgentPanel active={true} mode="live" events={state.agentEvents} />
           ) : (
-            <AgentDAG events={state.agentEvents} />
+            <AgentDAG key="processing-pipeline" events={state.agentEvents} mode="live" />
           )}
         </div>
 

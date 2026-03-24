@@ -85,6 +85,9 @@ export function ReportSections({
     setPdfBusy(true);
     setIsPrinting(true);
     await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    el.scrollIntoView({ block: "start" });
+    window.scrollTo(0, 0);
+    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
     try {
       await exportReportPdf(el, data.investor.name);
       toast.success("PDF downloaded successfully");
