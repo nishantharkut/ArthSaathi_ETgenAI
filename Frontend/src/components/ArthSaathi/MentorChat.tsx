@@ -160,14 +160,14 @@ export function MentorChat({ analysis, variant = "default" }: MentorChatProps) {
 
   const shellClass =
     variant === "sheet"
-      ? "card-arth flex flex-col overflow-hidden border border-white/10 flex-1 min-h-0 h-full max-h-[85vh]"
-      : "card-arth flex flex-col overflow-hidden border border-white/10 min-h-[420px] max-h-[min(720px,calc(100vh-3rem))]";
+      ? "card-arth flex flex-col overflow-hidden border border-white/[0.06] flex-1 min-h-0 h-full max-h-[85vh]"
+      : "card-arth flex flex-col overflow-hidden border border-white/[0.06] min-h-[420px] max-h-[min(720px,calc(100vh-3rem))]";
 
   return (
     <TooltipProvider>
       <div className={shellClass}>
         <div
-          className="flex items-center justify-between gap-2 px-4 py-3 border-b border-white/10"
+          className="flex items-center justify-between gap-2 px-4 py-3 border-b border-white/[0.06]"
           style={{ background: "rgba(74, 144, 217, 0.08)" }}
         >
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -183,7 +183,7 @@ export function MentorChat({ analysis, variant = "default" }: MentorChatProps) {
             <button
               type="button"
               onClick={() => setAutoSpeak((a) => !a)}
-              className="p-2 rounded-lg border border-white/10 shrink-0 transition-colors hover:bg-white/5"
+              className="p-2 rounded-lg border border-white/[0.06] shrink-0 transition-colors hover:bg-white/5"
               style={{ color: "hsl(var(--text-secondary))" }}
               aria-label={autoSpeak ? "Disable spoken replies" : "Enable spoken replies"}
             >
@@ -232,7 +232,7 @@ export function MentorChat({ analysis, variant = "default" }: MentorChatProps) {
               type="button"
               disabled={loading}
               onClick={() => void send(q)}
-              className="font-body text-xs px-2 py-1 rounded-full border border-white/10 hover:bg-white/5 transition-colors"
+              className="font-body text-xs px-2 py-1 rounded-full border border-white/[0.06] hover:bg-white/5 transition-colors"
               style={{ color: "hsl(var(--text-secondary))" }}
             >
               {q}
@@ -241,7 +241,7 @@ export function MentorChat({ analysis, variant = "default" }: MentorChatProps) {
         </div>
 
         <form
-          className="p-3 pt-0 flex gap-2 items-center border-t border-white/10"
+          className="p-3 pt-0 flex gap-2 items-center border-t border-white/[0.06]"
           onSubmit={(e) => {
             e.preventDefault();
             void send(isListening ? transcript : input);
@@ -256,7 +256,7 @@ export function MentorChat({ analysis, variant = "default" }: MentorChatProps) {
                   disabled={loading}
                   onClick={() => (isListening ? stopListening() : startListening())}
                   className={cn(
-                    "p-2 h-10 w-10 shrink-0 rounded-lg border-white/10 hover:bg-white/5",
+                    "p-2 h-10 w-10 shrink-0 rounded-lg border border-white/[0.06] hover:bg-white/5",
                     isListening && "ring-2 ring-red-500/70 ring-offset-2 ring-offset-[hsl(var(--bg-primary))] animate-pulse",
                   )}
                   aria-label={isListening ? "Stop listening" : "Speak"}
@@ -276,13 +276,13 @@ export function MentorChat({ analysis, variant = "default" }: MentorChatProps) {
             }}
             placeholder="Ask ArthSaathi anything…"
             disabled={loading}
-            className="font-body text-sm bg-[hsl(var(--bg-tertiary))] border-white/10 flex-1 min-w-0"
+            className="font-body text-sm bg-[hsl(var(--bg-tertiary))] border border-white/[0.06] flex-1 min-w-0"
           />
           <Button
             type="submit"
             variant="outline"
             disabled={loading || !(isListening ? transcript : input).trim()}
-            className="p-2 h-10 w-10 shrink-0 rounded-lg border-white/10 hover:bg-white/5"
+            className="p-2 h-10 w-10 shrink-0 rounded-lg border border-white/[0.06] hover:bg-white/5"
             aria-label="Send"
           >
             <Send className="h-4 w-4" />

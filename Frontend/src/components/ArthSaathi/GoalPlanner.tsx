@@ -325,7 +325,7 @@ export function GoalPlanner({ data, exportCaptureMode, onMonthlyIncomeCommitted 
                 type="number"
                 value={targetYear}
                 onChange={(e) => setTargetYear(Number(e.target.value))}
-                className="bg-[hsl(var(--bg-tertiary))] border-white/10"
+                className="bg-[hsl(var(--bg-tertiary))] border border-white/[0.06]"
               />
             </label>
             <label className="font-body text-xs block space-y-1">
@@ -334,7 +334,7 @@ export function GoalPlanner({ data, exportCaptureMode, onMonthlyIncomeCommitted 
                 type="number"
                 value={currentAge}
                 onChange={(e) => setCurrentAge(Number(e.target.value))}
-                className="bg-[hsl(var(--bg-tertiary))] border-white/10"
+                className="bg-[hsl(var(--bg-tertiary))] border border-white/[0.06]"
               />
             </label>
             <label className="font-body text-xs block space-y-1">
@@ -344,7 +344,7 @@ export function GoalPlanner({ data, exportCaptureMode, onMonthlyIncomeCommitted 
                 value={monthlyIncome}
                 onChange={(e) => setMonthlyIncome(Number(e.target.value))}
                 onBlur={() => onMonthlyIncomeCommitted?.(monthlyIncome)}
-                className="bg-[hsl(var(--bg-tertiary))] border-white/10"
+                className="bg-[hsl(var(--bg-tertiary))] border border-white/[0.06]"
               />
             </label>
             <label className="font-body text-xs block space-y-1">
@@ -353,7 +353,7 @@ export function GoalPlanner({ data, exportCaptureMode, onMonthlyIncomeCommitted 
                 type="number"
                 value={monthlySip}
                 onChange={(e) => setMonthlySip(Number(e.target.value))}
-                className="bg-[hsl(var(--bg-tertiary))] border-white/10"
+                className="bg-[hsl(var(--bg-tertiary))] border border-white/[0.06]"
               />
             </label>
           </div>
@@ -365,7 +365,7 @@ export function GoalPlanner({ data, exportCaptureMode, onMonthlyIncomeCommitted 
                 value={customAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}
                 placeholder="e.g. 50000000"
-                className="bg-[hsl(var(--bg-tertiary))] border-white/10"
+                className="bg-[hsl(var(--bg-tertiary))] border border-white/[0.06]"
               />
             </label>
           ) : null}

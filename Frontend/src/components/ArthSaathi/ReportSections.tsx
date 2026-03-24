@@ -51,7 +51,7 @@ function UnavailableBlock({ title, description }: { title: string; description: 
 }
 
 const tabsListClass = (cols: 3 | 4) =>
-  `grid w-full ${cols === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"} mb-6 h-auto gap-1 rounded-lg p-1 border border-white/[0.06]`;
+  `grid w-full ${cols === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"} mb-8 h-auto gap-1 rounded-lg p-1 border border-white/[0.06]`;
 const tabsTriggerClass =
   "rounded-md py-2.5 text-sm font-medium transition-colors border-b-2 border-transparent data-[state=active]:border-[hsl(var(--accent))] data-[state=active]:text-[hsl(var(--accent))] data-[state=inactive]:text-[hsl(var(--text-tertiary))] data-[state=active]:shadow-none data-[state=active]:bg-transparent";
 

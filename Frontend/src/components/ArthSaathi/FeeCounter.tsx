@@ -23,10 +23,7 @@ export function FeeCounter({ annualDrag, variant = 'compact' }: FeeCounterProps)
 
   if (variant === 'banner') {
     return (
-      <div
-        className="card-arth p-6 w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-white/[0.06]"
-        style={{ borderLeft: '3px solid hsl(var(--negative))' }}
-      >
+      <div className="card-arth p-6 w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-white/[0.06] border-l-[3px] border-l-[hsl(var(--negative))]">
         <div className="flex items-center justify-center sm:justify-start gap-2 text-center sm:text-left">
           <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />

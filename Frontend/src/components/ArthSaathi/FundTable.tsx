@@ -35,7 +35,7 @@ export function FundTable({ funds }: FundTableProps) {
           return (
             <div
               key={fund.amfi_code}
-              className="rounded-lg border border-white/[0.06] p-4"
+              className="rounded-lg border border-white/[0.06] p-6"
               style={{ background: "hsl(var(--bg-tertiary))" }}
             >
               <p className="font-body text-sm font-medium text-primary-light">{title}</p>

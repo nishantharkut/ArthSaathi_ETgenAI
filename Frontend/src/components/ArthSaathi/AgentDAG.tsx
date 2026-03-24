@@ -310,7 +310,7 @@ export function AgentDAG({
               panOnDrag={allowPanZoom}
             >
               <Background variant="dots" gap={20} size={1} color="rgba(255,255,255,0.03)" />
-              <Controls className="!bg-[hsl(var(--bg-raised))] !border-white/10 [&_button]:!fill-white" />
+              <Controls className="!bg-[hsl(var(--bg-raised))] !border-white/[0.06] [&_button]:!fill-white" />
               <FitViewHelper signal={fitSignal} />
             </ReactFlow>
           </div>
