@@ -67,6 +67,7 @@ export function ReportSections({
   const [pipelineOpen, setPipelineOpen] = useState(false);
   /** Expand all sections for html2canvas; hides interactive chrome in-layout */
   const [isPrinting, setIsPrinting] = useState(false);
+  const [emergencyMonthlyIncome, setEmergencyMonthlyIncome] = useState<number | undefined>(undefined);
   const reportRef = useRef<HTMLDivElement>(null);
   const data = useWhatIfDirect(originalData, whatIfEnabled);
   const wealthChart = normalizeWealthProjectionForChart(data.wealth_projection);
@@ -138,8 +139,12 @@ export function ReportSections({
   const toolsBlocks =
     showPlannerAndTax ? (
       <>
-        <GoalPlanner data={data} exportCaptureMode={isPrinting} />
-        <EmergencyFundCheck funds={originalData.funds} />
+        <GoalPlanner
+          data={data}
+          exportCaptureMode={isPrinting}
+          onMonthlyIncomeCommitted={setEmergencyMonthlyIncome}
+        />
+        <EmergencyFundCheck funds={originalData.funds} monthlyIncome={emergencyMonthlyIncome} />
         <TaxInsights data={data} />
         <TaxRegimeCompare data={originalData} exportCaptureMode={isPrinting} />
       </>

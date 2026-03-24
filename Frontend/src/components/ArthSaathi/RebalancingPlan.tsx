@@ -61,7 +61,7 @@ export function RebalancingPlan({ content, aiGenerated }: RebalancingPlanProps) 
         background: 'linear-gradient(90deg, hsl(var(--accent)), hsl(var(--positive)))',
       }} />
 
-      <div className="p-8">
+      <div className="p-6">
         <div className="flex items-center gap-3 mb-6">
           <h2 className="font-display text-[22px] font-semibold text-primary-light">Rebalancing Plan</h2>
           {aiGenerated ? (

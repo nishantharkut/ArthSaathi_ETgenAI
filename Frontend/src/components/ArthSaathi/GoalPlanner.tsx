@@ -52,9 +52,11 @@ interface GoalPlannerProps {
   data: AnalysisData;
   /** PDF capture: omit form; show results only if present */
   exportCaptureMode?: boolean;
+  /** Sync monthly income to EmergencyFundCheck (blur on income field or after successful Calculate). */
+  onMonthlyIncomeCommitted?: (monthlyIncome: number) => void;
 }
 
-export function GoalPlanner({ data, exportCaptureMode }: GoalPlannerProps) {
+export function GoalPlanner({ data, exportCaptureMode, onMonthlyIncomeCommitted }: GoalPlannerProps) {
   const roadmapFillId = useId().replace(/:/g, "");
   const [open, setOpen] = useState(false);
   const [goalType, setGoalType] = useState<string>("retirement");
@@ -100,6 +102,7 @@ export function GoalPlanner({ data, exportCaptureMode }: GoalPlannerProps) {
       if (!res.ok) throw new Error(await res.text());
       const json = (await res.json()) as GoalCalculateResponse;
       setResult(json);
+      onMonthlyIncomeCommitted?.(monthlyIncome);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed");
       setResult(null);
@@ -340,6 +343,7 @@ export function GoalPlanner({ data, exportCaptureMode }: GoalPlannerProps) {
                 type="number"
                 value={monthlyIncome}
                 onChange={(e) => setMonthlyIncome(Number(e.target.value))}
+                onBlur={() => onMonthlyIncomeCommitted?.(monthlyIncome)}
                 className="bg-[hsl(var(--bg-tertiary))] border-white/10"
               />
             </label>

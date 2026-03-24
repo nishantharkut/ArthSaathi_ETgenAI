@@ -70,7 +70,7 @@ export function HeroUpload({ onAnalyze, onSampleData, onValidationError }: HeroU
         </p>
 
         {/* Upload Card */}
-        <div className="card-arth mt-10 p-8 max-w-[500px] mx-auto text-left">
+        <div className="card-arth mt-10 p-6 max-w-[500px] mx-auto text-left">
           {/* Dropzone */}
           {!file ? (
             <div

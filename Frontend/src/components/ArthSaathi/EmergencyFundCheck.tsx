@@ -3,13 +3,13 @@ import type { AnalysisData } from '@/types/analysis';
 interface EmergencyFundCheckProps {
   funds: AnalysisData['funds'];
   /**
-   * Optional income proxy: monthly expenses are estimated as 50% of this amount.
-   * When omitted or zero, expenses default to ₹50,000/month for the 6-month target.
+   * Optional monthly income (₹). Estimated monthly expenses use 50% of this value for the 6-month emergency target.
+   * When omitted or zero, expenses default to ₹50,000/month (same convention as goal planner fallbacks).
    */
-  monthlyExpenseBasisIncome?: number;
+  monthlyIncome?: number;
 }
 
-export function EmergencyFundCheck({ funds, monthlyExpenseBasisIncome }: EmergencyFundCheckProps) {
+export function EmergencyFundCheck({ funds, monthlyIncome }: EmergencyFundCheckProps) {
   const liquidValue = funds
     .filter((f) => {
       const cat = (f.category || '').toLowerCase();
@@ -22,7 +22,7 @@ export function EmergencyFundCheck({ funds, monthlyExpenseBasisIncome }: Emergen
     })
     .reduce((sum, f) => sum + f.current_value, 0);
 
-  const monthlyExpenses = monthlyExpenseBasisIncome ? monthlyExpenseBasisIncome * 0.5 : 50000;
+  const monthlyExpenses = monthlyIncome != null && monthlyIncome > 0 ? monthlyIncome * 0.5 : 50000;
   const target = monthlyExpenses * 6;
   const coverage = target > 0 ? liquidValue / target : 0;
   const months = monthlyExpenses > 0 ? liquidValue / monthlyExpenses : 0;

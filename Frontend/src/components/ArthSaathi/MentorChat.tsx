@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { Mic, MicOff, Radio, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { api } from "@/lib/api";
 import type { AnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
@@ -203,7 +203,10 @@ export function MentorChat({ analysis, variant = "default" }: MentorChatProps) {
               <span className="inline-flex items-center gap-1.5">
                 {m.content}
                 {m.role === "assistant" && speaking && autoSpeak && ttsSupported && i === lastAssistantIndex ? (
-                  <Radio className="h-3.5 w-3.5 text-accent shrink-0 animate-pulse" aria-hidden />
+                  <Volume2
+                    className="h-3.5 w-3.5 text-accent shrink-0 animate-pulse"
+                    aria-hidden
+                  />
                 ) : null}
               </span>
             </div>
