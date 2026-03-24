@@ -24,6 +24,7 @@ import type { AnalysisData, TaxInsightsResponse } from "@/types/analysis";
 import { normalizeWealthProjectionForChart } from "@/lib/wealthProjection";
 import { useWhatIfDirect } from "@/hooks/useWhatIfDirect";
 import { buildReportMarkdown, downloadMarkdownFile } from "@/lib/exportMarkdown";
+import { downloadPdfFromMarkdown } from "@/lib/exportPdfFromMarkdown";
 import { api } from "@/lib/api";
 
 interface ReportSectionsProps {
@@ -77,38 +78,55 @@ export function ReportSections({
       ? `Saving ₹${whatIfSavingsAnnual.toLocaleString("en-IN")}/year · Health score ${healthScoreDelta >= 0 ? "+" : ""}${healthScoreDelta} pts`
       : undefined;
 
+  const buildMarkdownForExport = useCallback(async (): Promise<string> => {
+    let taxInsights: TaxInsightsResponse | null = null;
+    if (showPlannerAndTax) {
+      try {
+        const res = await fetch(api.taxInsights, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ analysis: data }),
+        });
+        if (res.ok) {
+          taxInsights = (await res.json()) as TaxInsightsResponse;
+        }
+      } catch {
+        taxInsights = null;
+      }
+    }
+    return buildReportMarkdown(data, {
+      whatIfEnabled,
+      showPlannerAndTax,
+      footerLabel,
+      taxInsights,
+    });
+  }, [data, footerLabel, showPlannerAndTax, whatIfEnabled]);
+
+  const handleExportPdf = useCallback(async () => {
+    if (exportBusy) return;
+    setExportBusy(true);
+    try {
+      const md = await buildMarkdownForExport();
+      await downloadPdfFromMarkdown(md, data.investor.name);
+      toast.success("PDF report downloaded");
+    } catch {
+      toast.error("Could not generate PDF. Try Markdown export instead.");
+    } finally {
+      setExportBusy(false);
+    }
+  }, [buildMarkdownForExport, data.investor.name, exportBusy]);
+
   const handleExportMarkdown = useCallback(async () => {
     if (exportBusy) return;
     setExportBusy(true);
     try {
-      let taxInsights: TaxInsightsResponse | null = null;
-      if (showPlannerAndTax) {
-        try {
-          const res = await fetch(api.taxInsights, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ analysis: data }),
-          });
-          if (res.ok) {
-            taxInsights = (await res.json()) as TaxInsightsResponse;
-          }
-        } catch {
-          taxInsights = null;
-        }
-      }
-
-      const md = buildReportMarkdown(data, {
-        whatIfEnabled,
-        showPlannerAndTax,
-        footerLabel,
-        taxInsights,
-      });
+      const md = await buildMarkdownForExport();
       downloadMarkdownFile(md, data.investor.name);
       toast.success("Markdown report downloaded");
     } finally {
       setExportBusy(false);
     }
-  }, [data, exportBusy, footerLabel, showPlannerAndTax, whatIfEnabled]);
+  }, [buildMarkdownForExport, data.investor.name, exportBusy]);
 
   const analysisBlocks = (
     <>
@@ -203,7 +221,17 @@ export function ReportSections({
       </div>
 
       <div className="max-w-[1120px] mx-auto px-4">
-        <div className="flex justify-end pb-2">
+        <div className="flex flex-wrap justify-end gap-2 pb-2">
+          <button
+            type="button"
+            disabled={exportBusy}
+            onClick={() => void handleExportPdf()}
+            className="font-body text-xs px-3 py-1.5 rounded-md flex items-center gap-2 border border-white/[0.06] transition-colors disabled:opacity-50"
+            style={{ color: "hsl(var(--accent))", background: "rgba(74, 144, 217, 0.16)" }}
+          >
+            {exportBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+            {exportBusy ? "Export…" : "Download PDF"}
+          </button>
           <button
             type="button"
             disabled={exportBusy}
