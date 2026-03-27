@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { getToken, isAuthenticated } from "@/lib/auth";
 import { CheckCircle2 } from "lucide-react";
+import { AgentDAG } from "@/components/ArthSaathi/AgentDAG";
 import { AgentPanel } from "@/components/ArthSaathi/AgentPanel";
 import { useAnalysis } from "@/context/analysis-context";
 import { api } from "@/lib/api";
@@ -275,7 +276,39 @@ export default function AnalyzeProcessing() {
               (अर्थसाथी)
             </p>
           </div>
-          <AgentPanel active={true} mode="live" events={state.agentEvents} />
+          <div className="flex justify-center gap-2 mb-6">
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              aria-pressed={viewMode === "list"}
+              className="font-body text-xs px-4 py-2 rounded-full border transition-colors"
+              style={{
+                borderColor: viewMode === "list" ? "hsl(var(--accent))" : "rgba(255,255,255,0.12)",
+                background: viewMode === "list" ? "rgba(74, 144, 217, 0.15)" : "transparent",
+                color: "hsl(var(--text-secondary))",
+              }}
+            >
+              List view
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("dag")}
+              aria-pressed={viewMode === "dag"}
+              className="font-body text-xs px-4 py-2 rounded-full border transition-colors"
+              style={{
+                borderColor: viewMode === "dag" ? "hsl(var(--accent))" : "rgba(255,255,255,0.12)",
+                background: viewMode === "dag" ? "rgba(74, 144, 217, 0.15)" : "transparent",
+                color: "hsl(var(--text-secondary))",
+              }}
+            >
+              Pipeline view
+            </button>
+          </div>
+          {viewMode === "list" ? (
+            <AgentPanel active={true} mode="live" events={state.agentEvents} />
+          ) : (
+            <AgentDAG events={state.agentEvents} />
+          )}
         </div>
 
         {reviewSecondsLeft !== null && !showCompletion ? (

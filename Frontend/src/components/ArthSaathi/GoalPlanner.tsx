@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, Target } from "lucide-react";
+import {
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { api } from "@/lib/api";
 import { authHeaders } from "@/lib/auth";
 import type { AnalysisData, GoalCalculateResponse } from "@/types/analysis";
@@ -82,6 +90,8 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
         ) || 0,
       )
     : 0;
+
+  const yearlyRoadmap = result?.yearly_roadmap ?? result?.monthly_roadmap;
 
   return (
     <div className="card-arth p-6 border border-white/10">

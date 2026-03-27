@@ -164,6 +164,47 @@ export interface GoalCalculateResponse {
     alternative: string;
   };
   recommendations: string[];
+  /** Year-end corpus snapshots (backend `goals.py`); one row per year. */
+  yearly_roadmap?: Array<{
+    /** Month index at year-end (12, 24, …) */
+    month?: number;
+    year: number;
+    age: number;
+    corpus: number;
+    corpus_display: string;
+    cumulative_invested: number;
+  }>;
+  /** @deprecated Use `yearly_roadmap` (same shape). */
+  monthly_roadmap?: Array<{
+    month?: number;
+    year: number;
+    age: number;
+    corpus: number;
+    corpus_display: string;
+    cumulative_invested: number;
+  }>;
+  emergency_fund_check?: {
+    target: number;
+    target_display: string;
+    monthly_expenses_estimate: number;
+    recommendation: string;
+  };
+  asset_allocation?: {
+    equity_pct: number;
+    debt_pct: number;
+    rule: string;
+    note: string;
+  };
+}
+
+/** POST /api/tax/regime-compare */
+export interface TaxRegimeCompareResponse {
+  old_regime: Record<string, number>;
+  new_regime: Record<string, number>;
+  recommendation: string;
+  savings: number;
+  savings_display: string;
+  tips: string[];
 }
 
 /** POST /api/tax/insights */

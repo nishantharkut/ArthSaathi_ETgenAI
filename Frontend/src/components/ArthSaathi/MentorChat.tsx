@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { Send, Sparkles } from "lucide-react";
+import { Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { api } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import type { AnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 
 type Role = "user" | "assistant";
 
@@ -31,6 +33,7 @@ export function MentorChat({ analysis }: MentorChatProps) {
   const [streaming, setStreaming] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoSpeak, setAutoSpeak] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
   const accRef = useRef("");
   const portfolioContext = (analysis ?? {}) as unknown as Record<
@@ -58,6 +61,12 @@ export function MentorChat({ analysis }: MentorChatProps) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
+
+  useEffect(() => {
+    if (!isListening && transcript) {
+      setInput(transcript);
+    }
+  }, [isListening, transcript]);
 
   const send = useCallback(
     async (text: string) => {
@@ -132,6 +141,7 @@ export function MentorChat({ analysis }: MentorChatProps) {
           { role: "assistant", content: finalText },
         ]);
         setStreaming("");
+        if (autoSpeak && ttsSupported) speak(finalText);
       } catch (e) {
         setError(
           e instanceof Error ? e.message : "Could not reach mentor chat.",
@@ -141,7 +151,7 @@ export function MentorChat({ analysis }: MentorChatProps) {
         setLoading(false);
       }
     },
-    [loading, messages, portfolioContext],
+    [autoSpeak, loading, messages, portfolioContext, speak, ttsSupported],
   );
 
   return (
@@ -150,7 +160,7 @@ export function MentorChat({ analysis }: MentorChatProps) {
       style={{ minHeight: 420, maxHeight: "min(720px, calc(100vh - 3rem))" }}
     >
       <div
-        className="flex items-center gap-2 px-4 py-3 border-b border-white/10"
+        className="flex items-center justify-between gap-2 px-4 py-3 border-b border-white/10"
         style={{ background: "rgba(74, 144, 217, 0.08)" }}
       >
         <Sparkles className="h-4 w-4 text-[hsl(var(--accent))]" />
@@ -165,6 +175,17 @@ export function MentorChat({ analysis }: MentorChatProps) {
             Answers use your portfolio context
           </p>
         </div>
+        {ttsSupported ? (
+          <button
+            type="button"
+            onClick={() => setAutoSpeak((a) => !a)}
+            className="p-1.5 rounded-md border border-white/10 shrink-0"
+            style={{ color: "hsl(var(--text-secondary))" }}
+            aria-label={autoSpeak ? "Disable spoken replies" : "Enable spoken replies"}
+          >
+            {autoSpeak ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
+        ) : null}
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 font-body text-sm">
@@ -224,15 +245,17 @@ export function MentorChat({ analysis }: MentorChatProps) {
         className="p-3 pt-0 flex gap-2 border-t border-white/10"
         onSubmit={(e) => {
           e.preventDefault();
-          void send(input);
+          void send(isListening ? transcript : input);
         }}
       >
         <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          value={isListening ? transcript : input}
+          onChange={(e) => {
+            if (!isListening) setInput(e.target.value);
+          }}
           placeholder="Ask ArthSaathi anything…"
           disabled={loading}
-          className="font-body text-sm bg-[hsl(var(--bg-tertiary))] border-white/10"
+          className={`font-body text-sm bg-[hsl(var(--bg-tertiary))] border-white/10 ${isListening ? "ring-1 ring-red-400/50 animate-pulse" : ""}`}
         />
         <Button
           type="submit"
