@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Send, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
-import { authHeaders } from "@/lib/auth";
+import { getToken } from "@/lib/auth";
 import type { AnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,15 +75,19 @@ export function MentorChat({ analysis }: MentorChatProps) {
       setError(null);
       accRef.current = "";
       setStreaming("");
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      };
+      const token = getToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
 
       try {
         await fetchEventSource(api.chat, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "text/event-stream",
-            ...authHeaders(),
-          },
+          headers,
           body: JSON.stringify({
             message: trimmed,
             portfolio_context: portfolioContext,

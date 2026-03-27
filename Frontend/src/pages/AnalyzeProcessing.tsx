@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { authHeaders, isAuthenticated } from "@/lib/auth";
+import { getToken, isAuthenticated } from "@/lib/auth";
 import { CheckCircle2 } from "lucide-react";
 import { AgentPanel } from "@/components/ArthSaathi/AgentPanel";
 import { useAnalysis } from "@/context/analysis-context";
 import { api } from "@/lib/api";
-import type {
-  AgentEvent,
-  AnalysisData,
-  ApiErrorPayload,
-} from "@/types/analysis";
+import type { AgentEvent, AnalysisData, ApiErrorPayload } from "@/types/analysis";
 
 /** After the dialog appears, time before auto-navigate to report */
 const AUTO_CONTINUE_MS = 5000;
@@ -19,28 +15,22 @@ const REVIEW_SECONDS_BEFORE_DIALOG = 5;
 
 export default function AnalyzeProcessing() {
   const navigate = useNavigate();
-  const { state, startAnalysis, pushEvent, setResult, setError } =
-    useAnalysis();
+  const { state, startAnalysis, pushEvent, setResult, setError } = useAnalysis();
 
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login", { replace: true });
     }
   }, [navigate]);
+
   const [showCompletion, setShowCompletion] = useState(false);
-  const [completionMeta, setCompletionMeta] = useState<{
-    processingMs: number;
-  } | null>(null);
+  const [completionMeta, setCompletionMeta] = useState<{ processingMs: number } | null>(null);
   /** Countdown while you review the agent list (before overlay dialog) */
-  const [reviewSecondsLeft, setReviewSecondsLeft] = useState<number | null>(
-    null,
-  );
+  const [reviewSecondsLeft, setReviewSecondsLeft] = useState<number | null>(null);
   /** Countdown while dialog is open (until auto-navigate) */
-  const [secondsLeft, setSecondsLeft] = useState(
-    Math.ceil(AUTO_CONTINUE_MS / 1000),
-  );
-  const navigateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(Math.ceil(AUTO_CONTINUE_MS / 1000));
+  const navigateTimerRef = useRef<number | null>(null);
+  const countdownRef = useRef<number | null>(null);
   const manualSkipRef = useRef(false);
 
   useEffect(() => {
@@ -53,18 +43,19 @@ export default function AnalyzeProcessing() {
       }
 
       startAnalysis();
+      const headers: Record<string, string> = {};
+      const token = getToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
 
       const onErrorEvent = (payload: ApiErrorPayload) => {
         setError(payload);
-        navigate(
-          `/analyze/error?code=${payload.error_code || "INTERNAL_ERROR"}`,
-        );
+        navigate(`/analyze/error?code=${payload.error_code || "INTERNAL_ERROR"}`);
       };
       let errorHandled = false;
 
-      const parseHttpError = async (
-        response: Response,
-      ): Promise<ApiErrorPayload> => {
+      const parseHttpError = async (response: Response): Promise<ApiErrorPayload> => {
         try {
           const body = await response.json();
           if (body?.detail?.error_code) {
@@ -90,106 +81,93 @@ export default function AnalyzeProcessing() {
       };
 
       try {
-        await fetchEventSource(
-          state.mode === "sample" ? api.analyzeTest : api.analyze,
-          {
-            method: state.mode === "sample" ? "GET" : "POST",
-            headers: {
-              ...authHeaders(),
-            },
-            body:
-              state.mode === "sample"
-                ? undefined
-                : (() => {
-                    const formData = new FormData();
-                    formData.append("file", state.file as File);
-                    formData.append("password", state.password);
-                    return formData;
-                  })(),
-            signal: controller.signal,
-            async onopen(response) {
-              if (response.ok) return;
-              const payload = await parseHttpError(response);
-              errorHandled = true;
-              onErrorEvent(payload);
-              throw new Error(payload.error_code);
-            },
-            onmessage(event) {
-              if (event.event === "agent_update") {
-                pushEvent(JSON.parse(event.data) as AgentEvent);
-                return;
-              }
-
-              if (event.event === "result") {
-                const result = JSON.parse(event.data) as AnalysisData;
-                setResult(result);
-                setCompletionMeta({
-                  processingMs: result.processing_time_ms ?? 0,
-                });
-                // Let the full agent panel stay visible (no dim / no dialog) for REVIEW_SECONDS_BEFORE_DIALOG
-                setReviewSecondsLeft(REVIEW_SECONDS_BEFORE_DIALOG);
-                return;
-              }
-
-              if (event.event === "error") {
-                let parsed: unknown;
-                try {
-                  parsed = JSON.parse(event.data);
-                } catch {
-                  const fallbackError: ApiErrorPayload = {
-                    status: "error",
-                    error_code: "INTERNAL_ERROR",
-                    message:
-                      "An unexpected error occurred while processing the analysis.",
-                  };
-                  errorHandled = true;
-                  onErrorEvent(fallbackError);
-                  return;
-                }
-
-                const raw = (parsed ?? {}) as Partial<ApiErrorPayload> & {
-                  error?: string;
-                };
-
-                const errorCode =
-                  typeof raw.error_code === "string" &&
-                  raw.error_code.length > 0
-                    ? raw.error_code
-                    : "INTERNAL_ERROR";
-
-                const message =
-                  (typeof raw.message === "string" &&
-                    raw.message.length > 0 &&
-                    raw.message) ||
-                  (typeof raw.error === "string" &&
-                    raw.error.length > 0 &&
-                    raw.error) ||
-                  "An unexpected error occurred while processing the analysis.";
-
-                const errorPayload: ApiErrorPayload = {
-                  status: "error",
-                  error_code: errorCode,
-                  message,
-                };
-
-                errorHandled = true;
-                onErrorEvent(errorPayload);
-              }
-            },
-            onerror(err) {
-              if (controller.signal.aborted) return;
-              const fallbackError: ApiErrorPayload = {
-                status: "error",
-                error_code: "INTERNAL_ERROR",
-                message:
-                  err instanceof Error ? err.message : "Streaming failed",
-              };
-              errorHandled = true;
-              onErrorEvent(fallbackError);
-              throw err;
-            },
+        await fetchEventSource(state.mode === "sample" ? api.analyzeTest : api.analyze, {
+          method: state.mode === "sample" ? "GET" : "POST",
+          headers,
+          body:
+            state.mode === "sample"
+              ? undefined
+              : (() => {
+                  const formData = new FormData();
+                  formData.append("file", state.file as File);
+                  formData.append("password", state.password);
+                  return formData;
+                })(),
+          signal: controller.signal,
+          async onopen(response) {
+            if (response.ok) return;
+            const payload = await parseHttpError(response);
+            errorHandled = true;
+            onErrorEvent(payload);
+            throw new Error(payload.error_code);
           },
-        );
+          onmessage(event) {
+            if (event.event === "agent_update") {
+              pushEvent(JSON.parse(event.data) as AgentEvent);
+              return;
+            }
+
+            if (event.event === "result") {
+              const result = JSON.parse(event.data) as AnalysisData;
+              setResult(result);
+              setCompletionMeta({ processingMs: result.processing_time_ms ?? 0 });
+              // Let the full agent panel stay visible (no dim / no dialog) for REVIEW_SECONDS_BEFORE_DIALOG
+              setReviewSecondsLeft(REVIEW_SECONDS_BEFORE_DIALOG);
+              return;
+            }
+
+            if (event.event === "error") {
+              let parsed: unknown;
+              try {
+                parsed = JSON.parse(event.data);
+              } catch {
+                const fallbackError: ApiErrorPayload = {
+                  status: "error",
+                  error_code: "INTERNAL_ERROR",
+                  message: "An unexpected error occurred while processing the analysis.",
+                };
+                errorHandled = true;
+                onErrorEvent(fallbackError);
+                return;
+              }
+
+              const raw: Record<string, unknown> =
+                parsed !== null &&
+                typeof parsed === "object" &&
+                !Array.isArray(parsed)
+                  ? (parsed as Record<string, unknown>)
+                  : {};
+              const errorCode =
+                typeof raw.error_code === "string" && raw.error_code.length > 0
+                  ? raw.error_code
+                  : "INTERNAL_ERROR";
+              const message =
+                (typeof raw.message === "string" && raw.message.length > 0 && raw.message) ||
+                (typeof raw.error === "string" && raw.error.length > 0 && raw.error) ||
+                "An unexpected error occurred while processing the analysis.";
+
+              const errorPayload: ApiErrorPayload = {
+                status: "error",
+                error_code: errorCode,
+                message,
+              };
+
+              errorHandled = true;
+              onErrorEvent(errorPayload);
+            }
+          },
+          onerror(err) {
+            if (controller.signal.aborted) return;
+            const fallbackError: ApiErrorPayload = {
+              status: "error",
+              error_code: "INTERNAL_ERROR",
+              message: err instanceof Error ? err.message : "Streaming failed",
+            };
+            errorHandled = true;
+            onErrorEvent(fallbackError);
+            throw err;
+          },
+        });
       } catch {
         if (controller.signal.aborted || errorHandled) return;
         const fallbackError: ApiErrorPayload = {
@@ -206,26 +184,17 @@ export default function AnalyzeProcessing() {
     return () => {
       controller.abort();
     };
-  }, [
-    navigate,
-    pushEvent,
-    setError,
-    setResult,
-    startAnalysis,
-    state.file,
-    state.mode,
-    state.password,
-  ]);
+  }, [navigate, pushEvent, setError, setResult, startAnalysis, state.file, state.mode, state.password]);
 
   const goToReport = () => {
     manualSkipRef.current = true;
     setReviewSecondsLeft(null);
     if (navigateTimerRef.current) {
-      clearTimeout(navigateTimerRef.current);
+      window.clearTimeout(navigateTimerRef.current);
       navigateTimerRef.current = null;
     }
     if (countdownRef.current) {
-      clearInterval(countdownRef.current);
+      window.clearInterval(countdownRef.current);
       countdownRef.current = null;
     }
     navigate("/analyze/report");
@@ -265,11 +234,11 @@ export default function AnalyzeProcessing() {
 
     return () => {
       if (countdownRef.current) {
-        clearInterval(countdownRef.current);
+        window.clearInterval(countdownRef.current);
         countdownRef.current = null;
       }
       if (navigateTimerRef.current) {
-        clearTimeout(navigateTimerRef.current);
+        window.clearTimeout(navigateTimerRef.current);
         navigateTimerRef.current = null;
       }
     };
@@ -301,13 +270,8 @@ export default function AnalyzeProcessing() {
           className={`w-full max-w-[1120px] transition-opacity duration-300 ${showCompletion ? "opacity-40 pointer-events-none" : ""}`}
         >
           <div className="text-center mb-8">
-            <h1 className="font-display text-3xl font-bold text-primary-light">
-              ArthSaathi
-            </h1>
-            <p
-              className="font-body text-sm mt-1"
-              style={{ color: "hsl(var(--text-tertiary))" }}
-            >
+            <h1 className="font-display text-3xl font-bold text-primary-light">ArthSaathi</h1>
+            <p className="font-body text-sm mt-1" style={{ color: "hsl(var(--text-tertiary))" }}>
               (अर्थसाथी)
             </p>
           </div>
@@ -318,23 +282,14 @@ export default function AnalyzeProcessing() {
           <div
             className="fixed bottom-0 left-0 right-0 z-40 flex flex-col sm:flex-row items-center justify-center gap-3 px-4 py-4"
             style={{
-              background:
-                "linear-gradient(180deg, transparent 0%, hsla(220, 25%, 8%, 0.97) 30%)",
+              background: "linear-gradient(180deg, transparent 0%, hsla(220, 25%, 8%, 0.97) 30%)",
               borderTop: "1px solid rgba(74, 144, 217, 0.2)",
             }}
           >
-            <p
-              className="font-body text-sm text-center"
-              style={{ color: "hsl(var(--text-secondary))" }}
-            >
-              <span className="text-primary-light font-medium">
-                Review the agents above
-              </span>{" "}
-              — confirm all 9 steps completed. Summary dialog in{" "}
-              <span className="font-mono-dm text-accent">
-                {reviewSecondsLeft}
-              </span>
-              s
+            <p className="font-body text-sm text-center" style={{ color: "hsl(var(--text-secondary))" }}>
+              <span className="text-primary-light font-medium">Review the agents above</span> — confirm all 9 steps
+              completed. Summary dialog in{" "}
+              <span className="font-mono-dm text-accent">{reviewSecondsLeft}</span>s
             </p>
             <button
               type="button"
@@ -354,10 +309,7 @@ export default function AnalyzeProcessing() {
         {showCompletion ? (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center px-4"
-            style={{
-              background: "rgba(8, 12, 20, 0.72)",
-              backdropFilter: "blur(6px)",
-            }}
+            style={{ background: "rgba(8, 12, 20, 0.72)", backdropFilter: "blur(6px)" }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="completion-title"
@@ -367,40 +319,22 @@ export default function AnalyzeProcessing() {
               style={{ border: "1px solid rgba(74, 144, 217, 0.25)" }}
             >
               <div className="flex justify-center mb-4">
-                <CheckCircle2
-                  className="w-14 h-14"
-                  style={{ color: "hsl(var(--positive))" }}
-                  strokeWidth={1.5}
-                />
+                <CheckCircle2 className="w-14 h-14" style={{ color: "hsl(var(--positive))" }} strokeWidth={1.5} />
               </div>
-              <h2
-                id="completion-title"
-                className="font-display text-xl font-semibold text-primary-light"
-              >
+              <h2 id="completion-title" className="font-display text-xl font-semibold text-primary-light">
                 All agents completed
               </h2>
-              <p
-                className="font-body text-sm mt-2"
-                style={{ color: "hsl(var(--text-secondary))" }}
-              >
+              <p className="font-body text-sm mt-2" style={{ color: "hsl(var(--text-secondary))" }}>
                 9/9 orchestration steps finished
                 {completionMeta != null && completionMeta.processingMs > 0 ? (
-                  <span
-                    className="block mt-1 font-mono-dm text-xs"
-                    style={{ color: "hsl(var(--text-tertiary))" }}
-                  >
-                    Pipeline time{" "}
-                    {(completionMeta.processingMs / 1000).toFixed(1)}s
+                  <span className="block mt-1 font-mono-dm text-xs" style={{ color: "hsl(var(--text-tertiary))" }}>
+                    Pipeline time {(completionMeta.processingMs / 1000).toFixed(1)}s
                   </span>
                 ) : null}
               </p>
-              <p
-                className="font-body text-sm mt-5"
-                style={{ color: "hsl(var(--text-tertiary))" }}
-              >
+              <p className="font-body text-sm mt-5" style={{ color: "hsl(var(--text-tertiary))" }}>
                 Opening your report in{" "}
-                <span className="font-mono-dm text-accent">{secondsLeft}</span>
-                s…
+                <span className="font-mono-dm text-accent">{secondsLeft}</span>s…
               </p>
               <button
                 type="button"
