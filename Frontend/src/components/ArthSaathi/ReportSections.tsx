@@ -57,6 +57,7 @@ export function ReportSections({
 }: ReportSectionsProps) {
   const [whatIfEnabled, setWhatIfEnabled] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
+  const pdfBusyRef = useRef(false);
   const [pipelineOpen, setPipelineOpen] = useState(false);
   /** Radix Collapsible unmounts closed content; expand during PDF capture so html2canvas sees it. */
   const [pdfExpandCollapsibles, setPdfExpandCollapsibles] = useState(false);
@@ -66,7 +67,8 @@ export function ReportSections({
 
   const handleExportPdf = useCallback(async () => {
     const el = reportRef.current;
-    if (!el || pdfBusy) return;
+    if (!el || pdfBusyRef.current) return;
+    pdfBusyRef.current = true;
     setPdfBusy(true);
     setPdfExpandCollapsibles(true);
     await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
@@ -74,9 +76,10 @@ export function ReportSections({
       await exportReportPdf(el, data.investor.name);
     } finally {
       setPdfExpandCollapsibles(false);
+      pdfBusyRef.current = false;
       setPdfBusy(false);
     }
-  }, [data.investor.name, pdfBusy]);
+  }, [data.investor.name]);
 
   return (
     <div className="animate-reveal">
@@ -189,7 +192,7 @@ export function ReportSections({
               </div>
               <ChevronDown className="h-5 w-5 shrink-0 text-[hsl(var(--text-tertiary))] transition-transform duration-200 group-data-[state=open]:rotate-180" />
             </CollapsibleTrigger>
-            <CollapsibleContent>
+            <CollapsibleContent forceMount>
               <div className="border-t border-white/10 px-2 pb-4 pt-2">
                 <AgentDAG mode="static" events={[]} className="h-[480px] rounded-lg" />
               </div>

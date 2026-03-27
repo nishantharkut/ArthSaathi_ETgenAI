@@ -166,6 +166,8 @@ export interface GoalCalculateResponse {
   recommendations: string[];
   /** Year-end corpus snapshots (backend `goals.py`); one row per year. */
   yearly_roadmap?: Array<{
+    /** Month index at year-end (12, 24, …) */
+    month?: number;
     year: number;
     age: number;
     corpus: number;
@@ -174,6 +176,7 @@ export interface GoalCalculateResponse {
   }>;
   /** @deprecated Use `yearly_roadmap` (same shape). */
   monthly_roadmap?: Array<{
+    month?: number;
     year: number;
     age: number;
     corpus: number;

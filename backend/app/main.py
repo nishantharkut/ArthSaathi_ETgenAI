@@ -115,15 +115,15 @@ def tax_insights_endpoint(payload: dict = Body(...)):
 
 
 class TaxRegimeBody(BaseModel):
-    gross_salary: float
-    hra_received_annual: float = 0
-    rent_paid_annual: float = 0
+    gross_salary: float = Field(ge=0)
+    hra_received_annual: float = Field(0, ge=0)
+    rent_paid_annual: float = Field(0, ge=0)
     is_metro: bool = True
-    section_80c: float = 0
-    section_80d: float = 0
-    section_80ccd1b: float = 0
-    home_loan_interest: float = 0
-    elss_from_portfolio: float = 0
+    section_80c: float = Field(0, ge=0)
+    section_80d: float = Field(0, ge=0)
+    section_80ccd1b: float = Field(0, ge=0)
+    home_loan_interest: float = Field(0, ge=0)
+    elss_from_portfolio: float = Field(0, ge=0)
 
 
 @app.post("/api/tax/regime-compare")

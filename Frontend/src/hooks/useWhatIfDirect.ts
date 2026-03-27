@@ -1,15 +1,19 @@
 import { useMemo } from 'react';
 import type { AnalysisData } from '@/types/analysis';
 
-/** Backend (`cost.py`) stores TER as a fraction (e.g. 0.018); if a value > 1 slipped in as a percent, normalize. */
+/**
+ * Normalize TER to a decimal fraction for drag math. `cost.py` usually stores decimals (e.g. 0.018).
+ * If a percent slipped in (`1.8`, or e.g. `0.63` for 0.63%), divide by 100.
+ */
 function expenseTerAsFraction(ter: number): number {
   if (ter > 1) return ter / 100;
+  if (ter > 0.1) return ter / 100;
   return ter;
 }
 
 /**
  * Recalculate AnalysisData as if all regular plans used direct-plan TERs.
- * Uses per-fund direct_plan_ter from the API (fractional TER, same as `cost.py`).
+ * Uses per-fund `direct_plan_ter` from the API after `expenseTerAsFraction` normalization.
  */
 export function useWhatIfDirect(original: AnalysisData, enabled: boolean): AnalysisData {
   return useMemo(() => {
@@ -24,7 +28,7 @@ export function useWhatIfDirect(original: AnalysisData, enabled: boolean): Analy
       if (fund.is_direct) {
         totalAnnualDrag += fund.expense.annual_drag_rupees;
         totalProjected10yr += fund.expense.projected_10yr_drag_rupees ?? 0;
-        weightedTerSum += fund.current_value * fund.expense.estimated_ter;
+        weightedTerSum += fund.current_value * expenseTerAsFraction(fund.expense.estimated_ter);
         totalValue += fund.current_value;
         return fund;
       }
