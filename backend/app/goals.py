@@ -67,15 +67,16 @@ def compute_goal(
 
     # --- Projected corpus ---------------------------------------------------
     r = max(portfolio_xirr, 0.001)
+    # Effective monthly rate (matches yearly_roadmap simulation)
+    monthly_growth_eff = ((1 + r) ** (1 / 12)) - 1
     projected_corpus = portfolio_value * ((1 + r) ** years_remaining)
 
+    # SIP matches the roadmap loop: deposit at month start, then apply monthly growth (annuity due).
     if monthly_sip_possible > 0 and years_remaining > 0:
-        monthly_rate = r / 12
         n = years_remaining * 12
-        # FV of annuity
         sip_corpus = monthly_sip_possible * (
-            ((1 + monthly_rate) ** n - 1) / monthly_rate
-        )
+            ((1 + monthly_growth_eff) ** n - 1) / monthly_growth_eff
+        ) * (1 + monthly_growth_eff)
         projected_corpus += sip_corpus
 
     shortfall = max(0.0, inflation_adjusted_target - projected_corpus)
@@ -83,9 +84,10 @@ def compute_goal(
 
     additional_sip = 0.0
     if shortfall > 0 and years_remaining > 0:
-        monthly_rate = r / 12
         n = years_remaining * 12
-        denom = ((1 + monthly_rate) ** n - 1) / monthly_rate
+        denom = (
+            ((1 + monthly_growth_eff) ** n - 1) / monthly_growth_eff * (1 + monthly_growth_eff)
+        )
         if denom > 0:
             additional_sip = shortfall / denom
 
@@ -106,6 +108,55 @@ def compute_goal(
         recommendations.append(
             "You appear broadly on track versus this goal — revisit yearly as markets and income change."
         )
+
+    forward_rate = r
+    monthly_growth_rate = monthly_growth_eff
+    # Year-end snapshots (monthly compounding loop; one row per year-end)
+    yearly_roadmap: list[dict[str, Any]] = []
+    if years_remaining > 0:
+        running_corpus = portfolio_value
+        monthly_sip = monthly_sip_possible
+        for month in range(1, years_remaining * 12 + 1):
+            running_corpus += monthly_sip
+            running_corpus *= 1 + monthly_growth_rate
+            if month % 12 == 0:
+                year = month // 12
+                yearly_roadmap.append(
+                    {
+                        "month": month,
+                        "year": year,
+                        "age": current_age + year,
+                        "corpus": round(running_corpus),
+                        "corpus_display": format_inr(round(running_corpus)),
+                        "cumulative_invested": round(portfolio_value + monthly_sip * month),
+                    }
+                )
+
+    income_for_emergency = monthly_income if monthly_income > 0 else 50000.0
+    monthly_expenses_ef = income_for_emergency * 0.50
+    emergency_target = monthly_expenses_ef * 6
+    emergency_rec = (
+        f"Maintain {format_inr(round(emergency_target))} in liquid funds before aggressive investing"
+    )
+    if monthly_income <= 0:
+        emergency_rec += (
+            " (assuming ₹50,000 monthly income; update your income for a personalised target)"
+        )
+    emergency_fund_check = {
+        "target": round(emergency_target),
+        "target_display": format_inr(round(emergency_target)),
+        "monthly_expenses_estimate": round(monthly_expenses_ef),
+        "recommendation": emergency_rec,
+    }
+
+    equity_pct = max(20, min(80, 100 - current_age))
+    debt_pct = 100 - equity_pct
+    asset_allocation = {
+        "equity_pct": equity_pct,
+        "debt_pct": debt_pct,
+        "rule": "100 minus age (bounded 20–80% equity)",
+        "note": f"At age {current_age}, suggested {equity_pct}% equity / {debt_pct}% debt (illustrative)",
+    }
 
     return {
         "goal": {
@@ -131,7 +182,10 @@ def compute_goal(
             "retirement_target": (
                 "Retirement corpus = 25 × annual expenses at retirement age, with expenses inflated from 50% of current monthly income."
             ),
-            "sip_future_value": "Ordinary annuity FV: SIP × ((1+r/12)^(12n)-1)/(r/12).",
+            "sip_future_value": (
+                "SIP FV matches the roadmap: m=(1+r)^(1/12)-1, monthly deposit then growth "
+                "(annuity due): SIP × ((1+m)^n-1)/m × (1+m)."
+            ),
         },
         "gap_analysis": {
             "shortfall": round(shortfall, 2),
@@ -144,4 +198,7 @@ def compute_goal(
             ),
         },
         "recommendations": recommendations,
+        "yearly_roadmap": yearly_roadmap,
+        "emergency_fund_check": emergency_fund_check,
+        "asset_allocation": asset_allocation,
     }
