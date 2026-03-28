@@ -5,6 +5,7 @@ import DataStrip from "@/components/DataStrip";
 import ProblemSection from "@/components/ProblemSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import DashboardSection from "@/components/DashboardSection";
+import FeaturesSection from "@/components/FeaturesSection";
 import NumbersSection from "@/components/NumbersSection";
 import CredibilitySection from "@/components/CredibilitySection";
 import FinalCTASection from "@/components/FinalCTASection";
@@ -23,6 +24,8 @@ export default function Index() {
       <HowItWorksSection />
       <DataStrip />
       <DashboardSection />
+      <DataStrip />
+      <FeaturesSection />
       <DataStrip />
       <NumbersSection />
       <DataStrip />

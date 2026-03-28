@@ -51,7 +51,7 @@ export default function HowItWorksSection() {
         <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 md:gap-10 mb-12">
           <div className="hidden md:block">
             <span
-              className="font-syne font-medium text-[11px] text-text-muted uppercase tracking-[4px]"
+              className="font-syne font-medium text-xs text-text-muted uppercase tracking-[4px]"
               style={{
                 writingMode: "vertical-rl",
                 transform: "rotate(180deg)",
@@ -61,7 +61,7 @@ export default function HowItWorksSection() {
             </span>
           </div>
           <div>
-            <p className="md:hidden font-syne font-medium text-[11px] text-text-muted uppercase tracking-[4px] mb-2">
+            <p className="md:hidden font-syne font-medium text-xs text-text-muted uppercase tracking-[4px] mb-2">
               THE PROCESS
             </p>
             <h2
@@ -82,7 +82,7 @@ export default function HowItWorksSection() {
           {/* Column 1 */}
           <div className="news-col pr-0 md:pr-5 pb-8 md:pb-0 border-b md:border-b-0 md:border-r border-border-faint">
             <div className="h-0.5 w-full bg-accent mb-4" />
-            <p className="font-mono text-[11px] text-text-muted tracking-[2px]">
+            <p className="font-mono text-xs text-text-muted tracking-[2px]">
               01
             </p>
             <h3
@@ -104,7 +104,7 @@ export default function HowItWorksSection() {
           {/* Column 2 */}
           <div className="news-col px-0 md:px-5 py-8 md:py-0 border-b md:border-b-0 md:border-r border-border-faint">
             <div className="h-0.5 w-full bg-warning mb-4" />
-            <p className="font-mono text-[11px] text-text-muted tracking-[2px]">
+            <p className="font-mono text-xs text-text-muted tracking-[2px]">
               02
             </p>
             <h3
@@ -158,7 +158,7 @@ export default function HowItWorksSection() {
           {/* Column 3 */}
           <div className="news-col pl-0 md:pl-5 pt-8 md:pt-0">
             <div className="h-0.5 w-full bg-negative mb-4" />
-            <p className="font-mono text-[11px] text-text-muted tracking-[2px]">
+            <p className="font-mono text-xs text-text-muted tracking-[2px]">
               03
             </p>
             <h3
@@ -171,7 +171,7 @@ export default function HowItWorksSection() {
               Health score. Fund-by-fund cost breakdown. Overlap map. Fee
               trajectory. Wealth gap projection. AI rebalancing plan.
             </p>
-            <span className="inline-block mt-3 font-syne font-medium text-[11px] text-positive border border-positive rounded px-1.5 py-0.5">
+            <span className="inline-block mt-3 font-syne font-medium text-xs text-positive border border-positive rounded px-1.5 py-0.5">
               SEBI Data
             </span>
           </div>

@@ -25,7 +25,7 @@ export default function CredibilitySection() {
   return (
     <section ref={sectionRef} className="py-14 md:py-20">
       <div className="max-w-[480px] mx-auto px-6 text-center">
-        <p className="font-syne font-medium text-[11px] text-text-muted uppercase tracking-[3px]">
+        <p className="font-syne font-medium text-xs text-text-muted uppercase tracking-[3px]">
           ET AI HACKATHON · 2026
         </p>
         <h2
@@ -58,7 +58,7 @@ export default function CredibilitySection() {
             Open source · MIT
           </span>
           <Link
-            to="/analyze"
+            to="/dashboard"
             className="font-syne font-medium text-[12px] text-accent hover:underline"
           >
             Open Product Demo →

@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 
 export default function HeroSection() {
@@ -214,25 +215,35 @@ export default function HeroSection() {
         </p>
 
         {/* CTA */}
-        <div ref={ctaRef} className="mt-7">
-          <button
-            className="font-syne font-semibold text-[14px] text-white h-[46px] px-[26px] rounded-[9px] transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.97]"
+        <div
+          ref={ctaRef}
+          className="mt-7 flex flex-wrap items-center justify-center gap-3"
+        >
+          <Link
+            to="/dashboard"
+            className="font-syne font-semibold text-[14px] text-white h-[46px] px-[26px] rounded-[9px] transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center justify-center"
             style={{
               background: "hsl(213 60% 56%)",
               border: "1px solid hsla(213,60%,56%,0.35)",
               boxShadow: "none",
             }}
-            onClick={() => window.location.assign("/analyze")}
             onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.boxShadow =
+              (e.currentTarget as HTMLElement).style.boxShadow =
                 "0 6px 24px hsla(213,60%,56%,0.25)";
             }}
             onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.boxShadow = "none";
+              (e.currentTarget as HTMLElement).style.boxShadow = "none";
             }}
           >
             Analyze My Portfolio
-          </button>
+          </Link>
+          <Link
+            to="/demo"
+            className="font-syne font-semibold text-[14px] h-[46px] px-[26px] rounded-[9px] border border-white/[0.06] hover:border-white/[0.12] transition-colors inline-flex items-center justify-center"
+            style={{ color: "hsl(var(--text-secondary))" }}
+          >
+            View Demo
+          </Link>
         </div>
 
         {/* Microcopy */}
@@ -240,7 +251,7 @@ export default function HeroSection() {
           ref={microRef}
           className="font-syne text-text-muted text-[13px] mt-4"
         >
-          No signup · 30 seconds
+          Free · 30 seconds · No CAS required for demo
         </div>
       </div>
 
@@ -252,7 +263,7 @@ export default function HeroSection() {
         <div className="relative w-[1px] h-[48px] bg-text-muted">
           <div className="scroll-dot absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-text-secondary" />
         </div>
-        <span className="font-syne text-[10px] text-text-muted uppercase tracking-[3px] mt-2">
+        <span className="font-syne text-xs text-text-muted uppercase tracking-[3px] mt-2">
           scroll
         </span>
       </div>

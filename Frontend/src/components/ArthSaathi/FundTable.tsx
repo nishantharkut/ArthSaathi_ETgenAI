@@ -54,7 +54,7 @@ export function FundTable({ funds }: FundTableProps) {
               ].map((h) => (
                 <th
                   key={h}
-                  className="section-label text-[11px] px-6 py-3 text-left first:text-left"
+                  className="section-label text-xs px-6 py-3 text-left first:text-left"
                 >
                   {h}
                 </th>
@@ -153,7 +153,7 @@ export function FundTable({ funds }: FundTableProps) {
                             {fund.benchmark.alpha_display}
                           </span>
                           <p
-                            className="font-body text-[10px]"
+                            className="font-body text-xs"
                             style={{ color: "hsl(var(--text-tertiary))" }}
                           >
                             vs {fund.benchmark.name}
@@ -185,7 +185,7 @@ export function FundTable({ funds }: FundTableProps) {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span
-                        className={`text-[11px] font-medium font-body px-2 py-0.5 rounded ${fund.is_direct ? "pill-direct" : "pill-regular"}`}
+                        className={`text-xs font-medium font-body px-2 py-0.5 rounded ${fund.is_direct ? "pill-direct" : "pill-regular"}`}
                       >
                         {fund.is_direct ? "Direct" : "Regular"}
                       </span>
@@ -200,7 +200,7 @@ export function FundTable({ funds }: FundTableProps) {
                       >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div>
-                            <p className="section-label text-[10px] mb-2">
+                            <p className="section-label text-xs mb-2">
                               TOP 5 HOLDINGS
                             </p>
                             {fund.overlap.top_holdings.map((h, i) => (
@@ -231,7 +231,7 @@ export function FundTable({ funds }: FundTableProps) {
                             )}
                           </div>
                           <div>
-                            <p className="section-label text-[10px] mb-2">
+                            <p className="section-label text-xs mb-2">
                               EXPENSE BREAKDOWN
                             </p>
                             <div className="space-y-1">
@@ -279,7 +279,7 @@ export function FundTable({ funds }: FundTableProps) {
                             </div>
                           </div>
                           <div>
-                            <p className="section-label text-[10px] mb-2">
+                            <p className="section-label text-xs mb-2">
                               HOLDING PERIOD
                             </p>
                             <p className="font-mono-dm text-sm text-primary-light">

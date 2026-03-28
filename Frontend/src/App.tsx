@@ -1,28 +1,28 @@
 import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import Lenis from "lenis";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AnalysisProvider } from "@/context/analysis-context";
+import { AppLayout } from "@/components/AppLayout";
+import { AuthGuard } from "@/components/AuthGuard";
 import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import AuthCallback from "./pages/AuthCallback";
+import Dashboard from "./pages/Dashboard";
 import AnalyzeUpload from "./pages/AnalyzeUpload";
 import AnalyzeProcessing from "./pages/AnalyzeProcessing";
 import AnalyzeReport from "./pages/AnalyzeReport";
 import AnalyzeError from "./pages/AnalyzeError";
-import Demo from "./pages/Demo";
-import NotFound from "./pages/NotFound";
 import TaxWizard from "./pages/TaxWizard";
 import FirePlanner from "./pages/FirePlanner";
 import MentorPage from "./pages/MentorPage";
-import AuthCallback from "./pages/AuthCallback";
-import { AppNavbar } from "@/components/AppNavbar";
-import { FloatingChat } from "@/components/FloatingChat";
-import { AuthGuard } from "@/components/AuthGuard";
-import { AnalysisProvider } from "@/context/analysis-context";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Demo from "./pages/Demo";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -34,16 +34,6 @@ function ScrollToTop() {
   }, [location.pathname]);
 
   return null;
-}
-
-function LayoutWithNav({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <AppNavbar />
-      <div className="pt-12">{children}</div>
-      <FloatingChat />
-    </>
-  );
 }
 
 const App = () => {
@@ -74,13 +64,24 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
+
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthGuard>
+                    <AppLayout>
+                      <Dashboard />
+                    </AppLayout>
+                  </AuthGuard>
+                }
+              />
               <Route
                 path="/analyze"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <AnalyzeUpload />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
@@ -88,9 +89,9 @@ const App = () => {
                 path="/analyze/processing"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <AnalyzeProcessing />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
@@ -98,9 +99,9 @@ const App = () => {
                 path="/analyze/report"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <AnalyzeReport />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
@@ -108,9 +109,9 @@ const App = () => {
                 path="/analyze/error"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <AnalyzeError />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
@@ -118,9 +119,9 @@ const App = () => {
                 path="/tax"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <TaxWizard />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
@@ -128,9 +129,9 @@ const App = () => {
                 path="/fire"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <FirePlanner />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
@@ -138,9 +139,9 @@ const App = () => {
                 path="/mentor"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <MentorPage />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
@@ -148,22 +149,14 @@ const App = () => {
                 path="/demo"
                 element={
                   <AuthGuard>
-                    <LayoutWithNav>
+                    <AppLayout>
                       <Demo />
-                    </LayoutWithNav>
+                    </AppLayout>
                   </AuthGuard>
                 }
               />
-              <Route
-                path="/app"
-                element={
-                  <AuthGuard>
-                    <LayoutWithNav>
-                      <AnalyzeUpload />
-                    </LayoutWithNav>
-                  </AuthGuard>
-                }
-              />
+
+              <Route path="/app" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

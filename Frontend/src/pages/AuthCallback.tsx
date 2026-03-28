@@ -19,9 +19,9 @@ export default function AuthCallback() {
       }
     };
 
-    const goAnalyze = () => {
+    const goDashboard = () => {
       clearFallback();
-      navigate("/analyze", { replace: true });
+      navigate("/dashboard", { replace: true });
     };
 
     const goLogin = () => {
@@ -37,7 +37,7 @@ export default function AuthCallback() {
       if (!isMounted) return;
 
       if (session) {
-        goAnalyze();
+        goDashboard();
         return;
       }
 
@@ -45,7 +45,7 @@ export default function AuthCallback() {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, session) => {
         // Not only SIGNED_IN — INITIAL_SESSION / TOKEN_REFRESHED can carry the new session after OAuth.
-        if (session?.access_token) goAnalyze();
+        if (session?.access_token) goDashboard();
       });
 
       authSubscription = subscription;

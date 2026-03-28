@@ -25,7 +25,7 @@ export default function Signup() {
   const [confirmEmailHint, setConfirmEmailHint] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated()) navigate("/analyze", { replace: true });
+    if (isAuthenticated()) navigate("/dashboard", { replace: true });
   }, [navigate]);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function Signup() {
     try {
       const data = await registerRequest(email, password, name.trim());
       if (data.session) {
-        navigate("/analyze", { replace: true });
+        navigate("/dashboard", { replace: true });
       } else {
         setConfirmEmailHint(true);
       }

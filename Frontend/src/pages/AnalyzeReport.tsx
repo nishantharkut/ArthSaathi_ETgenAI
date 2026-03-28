@@ -10,7 +10,7 @@ export default function AnalyzeReport() {
 
   useEffect(() => {
     if (!state.result) {
-      navigate("/analyze", {
+      navigate("/dashboard", {
         replace: true,
         state: {
           reportHint: "Upload a CAS or try sample data to generate a report.",
