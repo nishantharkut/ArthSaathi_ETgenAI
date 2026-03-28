@@ -1,24 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { isAuthenticated, clearToken } from "@/lib/auth";
+import { isAuthenticated } from "@/lib/auth";
 
 export default function Navbar() {
-  const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
-  const [counter, setCounter] = useState(28538);
-  const [loggedIn, setLoggedIn] = useState(isAuthenticated());
-  const counterRef = useRef<HTMLSpanElement>(null);
   const wordmarkRef = useRef<HTMLSpanElement>(null);
   const centerRef = useRef<HTMLSpanElement>(null);
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnRef = useRef<HTMLAnchorElement>(null);
+  const loggedIn = isAuthenticated();
 
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
 
-    // Entrance animation - filter out null refs
     const refArray = [
       wordmarkRef.current,
       centerRef.current,
@@ -76,16 +71,6 @@ export default function Navbar() {
     };
   }, []);
 
-  useEffect(() => {
-    const increment = 28538 / 60;
-    const interval = setInterval(() => {
-      setCounter((prev) => prev + increment);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const displayNum = Math.floor(counter).toLocaleString("en-IN");
-
   return (
     <nav
       ref={navRef}
@@ -114,49 +99,22 @@ export default function Navbar() {
 
       <span
         ref={centerRef}
-        className="hidden md:flex items-center gap-1 text-[12px]"
+        className="hidden md:flex items-center gap-6"
       >
-        <span className="font-mono text-negative font-medium" ref={counterRef}>
-          ₹{displayNum}
-        </span>
-        <span className="font-syne text-text-muted">
-          /sec drained from India's investors
-        </span>
+        <a href="/analyze" className="font-syne text-[13px] text-text-muted hover:text-text-secondary transition-colors">X-Ray</a>
+        <a href="/tax" className="font-syne text-[13px] text-text-muted hover:text-text-secondary transition-colors">Tax</a>
+        <a href="/fire" className="font-syne text-[13px] text-text-muted hover:text-text-secondary transition-colors">FIRE</a>
+        <a href="/mentor" className="font-syne text-[13px] text-text-muted hover:text-text-secondary transition-colors">Mentor</a>
       </span>
 
       <div className="flex items-center gap-2">
-        <button
+        <a
           ref={btnRef}
-          className="font-syne font-semibold text-[13px] bg-accent text-white h-[34px] px-4 rounded-[7px] transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97]"
-          onClick={() => {
-            if (loggedIn) {
-              navigate("/analyze");
-            } else {
-              navigate("/login");
-            }
-          }}
+          href={loggedIn ? "/analyze" : "/login"}
+          className="font-syne font-semibold text-[13px] bg-accent text-white h-[34px] px-4 rounded-[7px] transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center justify-center no-underline"
         >
-          {loggedIn ? "Analyze Portfolio" : "Login to Analyze"}
-        </button>
-        {loggedIn ? (
-          <button
-            className="font-syne font-semibold text-[13px] border border-white/20 text-white h-[34px] px-4 rounded-[7px] hover:bg-white/10"
-            onClick={() => {
-              clearToken();
-              setLoggedIn(false);
-              navigate("/login");
-            }}
-          >
-            Logout
-          </button>
-        ) : (
-          <button
-            className="font-syne font-semibold text-[13px] border border-white/20 text-white h-[34px] px-4 rounded-[7px] hover:bg-white/10"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
-        )}
+          {loggedIn ? "Open App" : "Sign in"}
+        </a>
       </div>
     </nav>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { getToken, isAuthenticated } from "@/lib/auth";
+import { getToken } from "@/lib/auth";
 import { CheckCircle2 } from "lucide-react";
 import { AgentDAG } from "@/components/ArthSaathi/AgentDAG";
 import { AgentPanel } from "@/components/ArthSaathi/AgentPanel";
@@ -17,12 +17,6 @@ const REVIEW_SECONDS_BEFORE_DIALOG = 5;
 export default function AnalyzeProcessing() {
   const navigate = useNavigate();
   const { state, startAnalysis, pushEvent, setResult, setError } = useAnalysis();
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login", { replace: true });
-    }
-  }, [navigate]);
 
   const [showCompletion, setShowCompletion] = useState(false);
   const [completionMeta, setCompletionMeta] = useState<{ processingMs: number } | null>(null);
