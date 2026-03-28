@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { api } from "@/lib/api";
@@ -31,6 +31,7 @@ interface MentorChatProps {
 }
 
 export function MentorChat({ analysis, guestChatLocked = false }: MentorChatProps) {
+  const location = useLocation();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState("");
@@ -242,7 +243,11 @@ export function MentorChat({ analysis, guestChatLocked = false }: MentorChatProp
             color: "hsl(var(--text-secondary))",
           }}
         >
-          <Link to="/login" className="text-accent font-semibold hover:underline">
+          <Link
+            to="/login"
+            state={{ from: location.pathname }}
+            className="text-accent font-semibold hover:underline"
+          >
             Sign in
           </Link>{" "}
           to enable mentor chat.

@@ -127,6 +127,7 @@ export function AppSidebar({
   guestMode = false,
 }: AppSidebarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { state } = useAnalysis();
   const hasResult = Boolean(state.result);
   const [email, setEmail] = useState("");
@@ -138,17 +139,23 @@ export function AppSidebar({
       setInitial("?");
       return;
     }
+    let cancelled = false;
     fetchMe()
       .then((u) => {
+        if (cancelled) return;
         const e = u.email || "";
         setEmail(e);
         const d = (u.username || e || "U").trim();
         setInitial(d.charAt(0).toUpperCase());
       })
       .catch(() => {
+        if (cancelled) return;
         setEmail("");
         setInitial("?");
       });
+    return () => {
+      cancelled = true;
+    };
   }, [guestMode]);
 
   const handleSignOut = async () => {
@@ -339,6 +346,7 @@ export function AppSidebar({
             {showExpanded ? (
               <Link
                 to="/login"
+                state={{ from: location.pathname }}
                 className="min-w-0 flex-1 rounded-md border border-white/[0.08] px-2 py-1.5 text-center font-syne text-xs font-semibold text-accent hover:bg-white/[0.04] no-underline"
                 onClick={() => isMobile && onMobileOpenChange(false)}
               >
@@ -349,6 +357,7 @@ export function AppSidebar({
                 <TooltipTrigger asChild>
                   <Link
                     to="/login"
+                    state={{ from: location.pathname }}
                     className="rounded-md p-2 text-accent hover:bg-white/[0.04] no-underline inline-flex"
                     aria-label="Sign in"
                     onClick={() => isMobile && onMobileOpenChange(false)}

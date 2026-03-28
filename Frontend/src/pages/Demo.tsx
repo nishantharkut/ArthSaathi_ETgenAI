@@ -1,12 +1,15 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { ReportSections } from "@/components/ArthSaathi/ReportSections";
 import { MentorChat } from "@/components/ArthSaathi/MentorChat";
 import { mockData } from "@/data/mockData";
-import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { useSession } from "@/context/session-context";
 
 export default function Demo() {
   const navigate = useNavigate();
-  const session = useSupabaseSession();
+  const location = useLocation();
+  const { session, loading: sessionLoading } = useSession();
+  const guestChatLocked = sessionLoading || !session;
+  const showSignInNudge = !sessionLoading && !session;
 
   return (
     <div className="min-h-screen bg-primary-dark">
@@ -42,7 +45,7 @@ export default function Demo() {
                     Switch to Upload Flow
                   </button>
                 </div>
-                {!session && (
+                {showSignInNudge && (
                   <div
                     className="px-4 py-2 text-center rounded-lg"
                     style={{
@@ -57,6 +60,7 @@ export default function Demo() {
                       Want to analyze your own portfolio?{" "}
                       <Link
                         to="/login"
+                        state={{ from: location.pathname }}
                         className="text-accent hover:underline font-semibold"
                       >
                         Sign in
@@ -76,7 +80,7 @@ export default function Demo() {
           />
         </div>
         <aside className="w-full xl:w-[420px] shrink-0 xl:sticky xl:top-4 xl:self-start">
-          <MentorChat analysis={mockData} guestChatLocked={!session} />
+          <MentorChat analysis={mockData} guestChatLocked={guestChatLocked} />
         </aside>
       </div>
     </div>
