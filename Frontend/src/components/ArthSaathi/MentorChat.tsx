@@ -40,6 +40,8 @@ export function MentorChat({ analysis }: MentorChatProps) {
     string,
     unknown
   >;
+  const { isListening, transcript, isSupported: sttSupported, startListening, stopListening } = useSpeechRecognition();
+  const { speak, stop: stopSpeaking, isSupported: ttsSupported } = useSpeechSynthesis();
 
   const analysisKey = analysis
     ? `${analysis.processing_time_ms}-${analysis.portfolio_summary.total_funds}-${analysis.portfolio_summary.total_current_value}`
@@ -248,6 +250,18 @@ export function MentorChat({ analysis }: MentorChatProps) {
           void send(isListening ? transcript : input);
         }}
       >
+        {sttSupported ? (
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            onClick={() => isListening ? stopListening() : startListening()}
+            className={`shrink-0 ${isListening ? 'text-red-400 animate-pulse' : ''}`}
+            aria-label={isListening ? 'Stop listening' : 'Start listening'}
+          >
+            {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+          </Button>
+        ) : null}
         <Input
           value={isListening ? transcript : input}
           onChange={(e) => {

@@ -30,6 +30,7 @@ export default function AnalyzeProcessing() {
   const [reviewSecondsLeft, setReviewSecondsLeft] = useState<number | null>(null);
   /** Countdown while dialog is open (until auto-navigate) */
   const [secondsLeft, setSecondsLeft] = useState(Math.ceil(AUTO_CONTINUE_MS / 1000));
+  const [viewMode, setViewMode] = useState<'list' | 'dag'>('list');
   const navigateTimerRef = useRef<number | null>(null);
   const countdownRef = useRef<number | null>(null);
   const manualSkipRef = useRef(false);
