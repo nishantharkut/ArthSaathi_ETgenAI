@@ -205,6 +205,8 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+# Cursor project folder — local only; do not commit (rules, MCP state, etc.)
+.cursor/
 
 # Marimo
 marimo/_static/
