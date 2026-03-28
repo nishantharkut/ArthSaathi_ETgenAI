@@ -108,7 +108,7 @@ export default function TaxWizard() {
             <Link to="/analyze" className="text-accent hover:underline">
               Upload a CAS
             </Link>{" "}
-            for personalized tax and overlap-aware inputs.
+            for personalized tax and portfolio-aware inputs.
           </p>
         </div>
       ) : null}

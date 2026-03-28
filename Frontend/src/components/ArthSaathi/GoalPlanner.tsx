@@ -23,7 +23,8 @@ function axisShort(v: number): string {
   const a = Math.abs(v);
   if (a >= 1e7) return `${(v / 1e7).toFixed(1)}Cr`;
   if (a >= 1e5) return `${(v / 1e5).toFixed(0)}L`;
-  return `${Math.round(v / 1e3)}k`;
+  if (a >= 1e3) return `${Math.round(v / 1e3)}k`;
+  return String(Math.round(v));
 }
 
 const GOAL_TYPES = [

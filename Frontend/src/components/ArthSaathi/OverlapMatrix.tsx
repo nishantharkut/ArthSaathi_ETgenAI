@@ -1,5 +1,6 @@
 import { Fragment, useMemo } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { isEquityForOverlap } from "@/lib/equityCategory";
 import { shortFundName } from "@/lib/format";
 import type { AnalysisData } from "@/types/analysis";
 import { NoDataCard } from "@/components/ArthSaathi/NoDataCard";
@@ -21,7 +22,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
   const { ref, visible } = useScrollReveal();
 
   const equityFunds = useMemo(
-    () => funds.filter((f) => f.category.startsWith("Equity")),
+    () => funds.filter((f) => isEquityForOverlap(f.category)),
     [funds],
   );
 

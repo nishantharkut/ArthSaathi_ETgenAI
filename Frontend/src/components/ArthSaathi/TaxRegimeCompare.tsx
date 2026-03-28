@@ -29,6 +29,13 @@ interface TaxRegimeCompareProps {
 const inputClass =
   "bg-[hsl(var(--bg-tertiary))] border-white/10 font-mono-dm text-sm";
 
+/** Strips ₹, spaces, commas, etc. so pasted values still parse. */
+function parseAmountField(raw: string): number {
+  const digits = raw.replace(/\D/g, "");
+  const n = Number(digits);
+  return Number.isFinite(n) ? n : 0;
+}
+
 export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
   const [open, setOpen] = useState(false);
   const [grossSalary, setGrossSalary] = useState("1800000");
@@ -50,14 +57,14 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
     setErr(null);
     try {
       const body = {
-        gross_salary: Number(grossSalary.replace(/,/g, "")) || 0,
-        hra_received_annual: Number(hraAnnual.replace(/,/g, "")) || 0,
-        rent_paid_annual: Number(rentAnnual.replace(/,/g, "")) || 0,
+        gross_salary: parseAmountField(grossSalary),
+        hra_received_annual: parseAmountField(hraAnnual),
+        rent_paid_annual: parseAmountField(rentAnnual),
         is_metro: isMetro,
-        section_80c: Number(s80c.replace(/,/g, "")) || 0,
-        section_80d: Number(s80d.replace(/,/g, "")) || 0,
-        section_80ccd1b: Number(ccd1b.replace(/,/g, "")) || 0,
-        home_loan_interest: Number(homeLoan.replace(/,/g, "")) || 0,
+        section_80c: parseAmountField(s80c),
+        section_80d: parseAmountField(s80d),
+        section_80ccd1b: parseAmountField(ccd1b),
+        home_loan_interest: parseAmountField(homeLoan),
         elss_from_portfolio: elss,
       };
       const res = await fetch(api.taxRegimeCompare, {
