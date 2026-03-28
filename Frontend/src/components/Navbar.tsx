@@ -120,7 +120,7 @@ export default function Navbar() {
           to="/dashboard"
           className="font-syne text-[13px] text-text-muted hover:text-text-secondary transition-colors no-underline"
         >
-          X-Ray
+          Dashboard
         </Link>
         <Link
           to="/tax"

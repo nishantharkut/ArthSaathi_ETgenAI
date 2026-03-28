@@ -76,7 +76,7 @@ export default function FirePlanner() {
       {usingStub && (
         <p className="font-syne text-[13px] text-text-muted mt-6">
           For projections based on your actual returns,{" "}
-          <Link to="/dashboard" className="text-accent hover:underline">
+          <Link to="/analyze" className="text-accent hover:underline">
             upload a CAS statement
           </Link>
           .

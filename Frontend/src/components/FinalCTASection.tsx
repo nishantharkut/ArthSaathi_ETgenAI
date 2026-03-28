@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 
 export default function FinalCTASection() {
@@ -43,16 +44,16 @@ export default function FinalCTASection() {
         Find out exactly how much.
       </h2>
       <div className="cta-reveal mt-9">
-        <button
-          className="font-syne font-semibold text-[14px] text-white h-[46px] px-[26px] rounded-[9px] transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.97]"
+        <Link
+          to="/dashboard"
+          className="font-syne font-semibold text-[14px] text-white h-[46px] px-[26px] rounded-[9px] transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center justify-center no-underline"
           style={{
             background: "hsl(213 60% 56%)",
             border: "1px solid hsla(213,60%,56%,0.35)",
           }}
-          onClick={() => window.location.assign("/dashboard")}
         >
           Analyze My Portfolio — Free
-        </button>
+        </Link>
       </div>
       <p className="cta-reveal font-syne text-[12px] text-text-muted mt-4">
         Free · No credit card · Results in 30 seconds
