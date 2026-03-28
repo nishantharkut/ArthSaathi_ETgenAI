@@ -49,13 +49,13 @@ export default function FinalCTASection() {
             background: "hsl(213 60% 56%)",
             border: "1px solid hsla(213,60%,56%,0.35)",
           }}
-          onClick={() => window.location.assign("/analyze")}
+          onClick={() => window.location.assign("/dashboard")}
         >
           Analyze My Portfolio — Free
         </button>
       </div>
       <p className="cta-reveal font-syne text-[12px] text-text-muted mt-4">
-        No signup · No credit card · Results in 30 seconds
+        Free · No credit card · Results in 30 seconds
       </p>
     </section>
   );

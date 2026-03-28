@@ -202,7 +202,7 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
                 at current pace.
               </p>
               <div>
-                <div className="flex justify-between text-[11px] mb-1" style={{ color: "hsl(var(--text-tertiary))" }}>
+                <div className="flex justify-between text-xs mb-1" style={{ color: "hsl(var(--text-tertiary))" }}>
                   <span>Progress vs inflation-adjusted target</span>
                   <span>{onTrackPct}%</span>
                 </div>
@@ -232,7 +232,7 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
               </ul>
 
               <div
-                className="mt-3 pt-3 border-t border-white/10 font-body text-[11px] space-y-1"
+                className="mt-3 pt-3 border-t border-white/10 font-body text-xs space-y-1"
                 style={{ color: "hsl(var(--text-tertiary))" }}
               >
                 <p className="font-medium text-primary-light text-xs">Methodology</p>

@@ -91,7 +91,7 @@ export default function DashboardSection() {
           <span className="font-syne text-[12px] text-text-muted">
             ArthSaathi — Portfolio Report
           </span>
-          <span className="font-syne text-[11px] text-text-muted">
+          <span className="font-syne text-xs text-text-muted">
             Analyzed: Just now
           </span>
         </div>
@@ -124,7 +124,7 @@ export default function DashboardSection() {
                 <span className="font-mono text-[13px] text-text-muted">
                   / 100
                 </span>
-                <span className="font-syne font-semibold text-[11px] text-warning tracking-wider mt-1">
+                <span className="font-syne font-semibold text-xs text-warning tracking-wider mt-1">
                   C
                 </span>
               </div>
@@ -133,7 +133,7 @@ export default function DashboardSection() {
 
           {/* Fee cell */}
           <div>
-            <p className="font-syne text-[10px] text-text-muted tracking-[2px] uppercase">
+            <p className="font-syne text-xs text-text-muted tracking-[2px] uppercase">
               ANNUAL FEE DRAIN
             </p>
             <p className="font-mono font-semibold text-[24px] text-negative mt-1">
@@ -146,7 +146,7 @@ export default function DashboardSection() {
 
           {/* Overlap cell */}
           <div>
-            <p className="font-syne text-[10px] text-text-muted tracking-[2px] uppercase">
+            <p className="font-syne text-xs text-text-muted tracking-[2px] uppercase">
               PORTFOLIO OVERLAP
             </p>
             <p className="font-mono font-semibold text-[24px] text-warning mt-1">
@@ -186,7 +186,7 @@ export default function DashboardSection() {
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ background: "hsl(0 90% 68%)" }}
               />
-              <span className="font-syne text-[11px] text-text-muted">
+              <span className="font-syne text-xs text-text-muted">
                 Current
               </span>
             </span>
@@ -195,7 +195,7 @@ export default function DashboardSection() {
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ background: "hsl(160 67% 52%)" }}
               />
-              <span className="font-syne text-[11px] text-text-muted">
+              <span className="font-syne text-xs text-text-muted">
                 Optimised
               </span>
             </span>

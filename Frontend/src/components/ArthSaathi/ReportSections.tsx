@@ -18,6 +18,7 @@ import { TaxInsights } from "@/components/ArthSaathi/TaxInsights";
 import { TaxRegimeCompare } from "@/components/ArthSaathi/TaxRegimeCompare";
 import { AgentDAG } from "@/components/ArthSaathi/AgentDAG";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AnalysisData } from "@/types/analysis";
 import { normalizeWealthProjectionForChart } from "@/lib/wealthProjection";
 import { useWhatIfDirect } from "@/hooks/useWhatIfDirect";
@@ -136,107 +137,234 @@ export function ReportSections({
             savingsAnnual={originalData.expense_summary.total_potential_annual_savings}
           />
 
-          <div className="space-y-12 mt-8 pb-16">
-          <SummaryCards
-            summary={data.portfolio_summary}
-            xirr={data.portfolio_xirr}
-            annualDrag={data.expense_summary.total_annual_drag}
-            projected10yr={data.expense_summary.total_projected_10yr_drag}
-          />
-          <FeeCounter annualDrag={data.expense_summary.total_annual_drag} variant="banner" />
-          <HealthScore data={data.health_score} />
-          <FundTable funds={data.funds} />
-          <ExpenseCallout
-            projected10yr={data.expense_summary.total_projected_10yr_drag}
-            potentialSavings10yr={
-              data.expense_summary.total_potential_10yr_savings
-            }
-          />
-          {showFallbacks?.projectionUnavailable ? (
-            <UnavailableBlock
-              title="Wealth Projection Unavailable"
-              description="Projection data is currently unavailable for this report. Other analysis sections remain available."
-            />
-          ) : (
-            <WealthGapChart
-              currentPath={wealthChart.currentPath}
-              optimizedPath={wealthChart.optimizedPath}
-              assumptions={wealthChart.assumptions}
-            />
-          )}
-
-          {showFallbacks?.overlapUnavailable ? (
-            <UnavailableBlock
-              title="Overlap Analysis Unavailable"
-              description="Holdings data is not available for one or more selected funds."
-            />
-          ) : (
-            <OverlapMatrix data={data.overlap_analysis} funds={data.funds} />
-          )}
-
-          {showFallbacks?.benchmarkUnavailable ? (
-            <UnavailableBlock
-              title="Benchmark Comparison Unavailable"
-              description="Benchmark comparison is currently available for equity categories only."
-            />
-          ) : null}
-          <AssetAllocation
-            equityPct={data.portfolio_summary.equity_allocation_pct}
-            debtPct={data.portfolio_summary.debt_allocation_pct}
-            regularCount={data.portfolio_summary.regular_plan_count}
-            directCount={data.portfolio_summary.direct_plan_count}
-          />
-          <RebalancingPlan
-            content={data.rebalancing_plan.content}
-            aiGenerated={data.rebalancing_plan.ai_generated}
-          />
-
-          <Collapsible
-            open={pdfExpandCollapsibles || pipelineOpen}
-            onOpenChange={(o) => {
-              if (!pdfExpandCollapsibles) setPipelineOpen(o);
-            }}
-            className="group card-arth border border-white/10 overflow-hidden"
-          >
-            <CollapsibleTrigger
-              type="button"
-              className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left transition-colors hover:bg-white/[0.03]"
-            >
-              <div>
-                <p className="section-label mb-0">Analysis pipeline</p>
-                <p className="font-body text-xs mt-1" style={{ color: "hsl(var(--text-tertiary))" }}>
-                  How your CAS moved through the 9 agents (completed run)
+          {pdfExpandCollapsibles ? (
+            <div className="mt-8 space-y-12 pb-16">
+              <SummaryCards
+                summary={data.portfolio_summary}
+                xirr={data.portfolio_xirr}
+                annualDrag={data.expense_summary.total_annual_drag}
+                projected10yr={data.expense_summary.total_projected_10yr_drag}
+              />
+              <FeeCounter annualDrag={data.expense_summary.total_annual_drag} variant="banner" />
+              <HealthScore data={data.health_score} />
+              <FundTable funds={data.funds} />
+              <ExpenseCallout
+                projected10yr={data.expense_summary.total_projected_10yr_drag}
+                potentialSavings10yr={data.expense_summary.total_potential_10yr_savings}
+              />
+              {showFallbacks?.projectionUnavailable ? (
+                <UnavailableBlock
+                  title="Wealth Projection Unavailable"
+                  description="Projection data is currently unavailable for this report. Other analysis sections remain available."
+                />
+              ) : (
+                <WealthGapChart
+                  currentPath={wealthChart.currentPath}
+                  optimizedPath={wealthChart.optimizedPath}
+                  assumptions={wealthChart.assumptions}
+                />
+              )}
+              {showFallbacks?.overlapUnavailable ? (
+                <UnavailableBlock
+                  title="Overlap Analysis Unavailable"
+                  description="Holdings data is not available for one or more selected funds."
+                />
+              ) : (
+                <OverlapMatrix data={data.overlap_analysis} funds={data.funds} />
+              )}
+              {showFallbacks?.benchmarkUnavailable ? (
+                <UnavailableBlock
+                  title="Benchmark Comparison Unavailable"
+                  description="Benchmark comparison is currently available for equity categories only."
+                />
+              ) : null}
+              <AssetAllocation
+                equityPct={data.portfolio_summary.equity_allocation_pct}
+                debtPct={data.portfolio_summary.debt_allocation_pct}
+                regularCount={data.portfolio_summary.regular_plan_count}
+                directCount={data.portfolio_summary.direct_plan_count}
+              />
+              <RebalancingPlan
+                content={data.rebalancing_plan.content}
+                aiGenerated={data.rebalancing_plan.ai_generated}
+              />
+              <Collapsible
+                open={pdfExpandCollapsibles || pipelineOpen}
+                onOpenChange={(o) => {
+                  if (!pdfExpandCollapsibles) setPipelineOpen(o);
+                }}
+                className="group card-arth border border-white/10 overflow-hidden"
+              >
+                <CollapsibleTrigger
+                  type="button"
+                  className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left transition-colors hover:bg-white/[0.03]"
+                >
+                  <div>
+                    <p className="section-label mb-0">Analysis pipeline</p>
+                    <p className="font-body text-xs mt-1" style={{ color: "hsl(var(--text-tertiary))" }}>
+                      How your CAS moved through the 9 agents (completed run)
+                    </p>
+                  </div>
+                  <ChevronDown className="h-5 w-5 shrink-0 text-[hsl(var(--text-tertiary))] transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent forceMount>
+                  <div className="border-t border-white/10 px-2 pb-4 pt-2">
+                    <AgentDAG mode="static" events={[]} className="h-[480px] rounded-lg" />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+              <EmergencyFundCheck funds={originalData.funds} />
+              {showPlannerAndTax ? (
+                <>
+                  <GoalPlanner data={data} />
+                  <TaxInsights data={data} />
+                  <TaxRegimeCompare data={originalData} />
+                </>
+              ) : null}
+              <footer className="py-16 text-center">
+                <p className="font-body text-[13px]" style={{ color: "hsl(var(--text-tertiary))" }}>
+                  {footerLabel ?? "ArthSaathi (अर्थसाथी) — Built for ET AI Hackathon 2026"}
                 </p>
-              </div>
-              <ChevronDown className="h-5 w-5 shrink-0 text-[hsl(var(--text-tertiary))] transition-transform duration-200 group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent forceMount>
-              <div className="border-t border-white/10 px-2 pb-4 pt-2">
-                <AgentDAG mode="static" events={[]} className="h-[480px] rounded-lg" />
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
-          <EmergencyFundCheck funds={originalData.funds} />
-
-          {showPlannerAndTax ? (
+              </footer>
+            </div>
+          ) : (
             <>
-              <GoalPlanner data={data} />
-              <TaxInsights data={data} />
-              <TaxRegimeCompare data={originalData} />
-            </>
-          ) : null}
+              <div className="mt-8 space-y-8">
+                <SummaryCards
+                  summary={data.portfolio_summary}
+                  xirr={data.portfolio_xirr}
+                  annualDrag={data.expense_summary.total_annual_drag}
+                  projected10yr={data.expense_summary.total_projected_10yr_drag}
+                />
+                <FeeCounter annualDrag={data.expense_summary.total_annual_drag} variant="banner" />
+              </div>
 
-          <footer className="text-center py-16">
-            <p
-              className="font-body text-[13px]"
-              style={{ color: "hsl(var(--text-tertiary))" }}
-            >
-              {footerLabel ??
-                "ArthSaathi (अर्थसाथी) — Built for ET AI Hackathon 2026"}
-            </p>
-          </footer>
-          </div>
+              <Tabs defaultValue="overview" className="mt-8 w-full">
+                <TabsList
+                  className="grid h-10 w-full grid-cols-4 rounded-lg p-1"
+                  style={{ background: "hsl(var(--bg-secondary))" }}
+                >
+                  <TabsTrigger
+                    value="overview"
+                    className="rounded-md font-syne text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white"
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="analysis"
+                    className="rounded-md font-syne text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white"
+                  >
+                    Analysis
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="plan"
+                    className="rounded-md font-syne text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white"
+                  >
+                    AI Plan
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="planning"
+                    className="rounded-md font-syne text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white"
+                  >
+                    Planning
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview" className="mt-6 space-y-8">
+                  <HealthScore data={data.health_score} />
+                  <FundTable funds={data.funds} />
+                </TabsContent>
+
+                <TabsContent value="analysis" className="mt-6 space-y-8">
+                  <ExpenseCallout
+                    projected10yr={data.expense_summary.total_projected_10yr_drag}
+                    potentialSavings10yr={data.expense_summary.total_potential_10yr_savings}
+                  />
+                  {showFallbacks?.projectionUnavailable ? (
+                    <UnavailableBlock
+                      title="Wealth Projection Unavailable"
+                      description="Projection data is currently unavailable for this report. Other analysis sections remain available."
+                    />
+                  ) : (
+                    <WealthGapChart
+                      currentPath={wealthChart.currentPath}
+                      optimizedPath={wealthChart.optimizedPath}
+                      assumptions={wealthChart.assumptions}
+                    />
+                  )}
+                  {showFallbacks?.overlapUnavailable ? (
+                    <UnavailableBlock
+                      title="Overlap Analysis Unavailable"
+                      description="Holdings data is not available for one or more selected funds."
+                    />
+                  ) : (
+                    <OverlapMatrix data={data.overlap_analysis} funds={data.funds} />
+                  )}
+                  {showFallbacks?.benchmarkUnavailable ? (
+                    <UnavailableBlock
+                      title="Benchmark Comparison Unavailable"
+                      description="Benchmark comparison is currently available for equity categories only."
+                    />
+                  ) : null}
+                  <AssetAllocation
+                    equityPct={data.portfolio_summary.equity_allocation_pct}
+                    debtPct={data.portfolio_summary.debt_allocation_pct}
+                    regularCount={data.portfolio_summary.regular_plan_count}
+                    directCount={data.portfolio_summary.direct_plan_count}
+                  />
+                </TabsContent>
+
+                <TabsContent value="plan" className="mt-6 space-y-8">
+                  <RebalancingPlan
+                    content={data.rebalancing_plan.content}
+                    aiGenerated={data.rebalancing_plan.ai_generated}
+                  />
+                  <Collapsible
+                    open={pdfExpandCollapsibles || pipelineOpen}
+                    onOpenChange={(o) => {
+                      if (!pdfExpandCollapsibles) setPipelineOpen(o);
+                    }}
+                    className="group card-arth overflow-hidden border border-white/10"
+                  >
+                    <CollapsibleTrigger
+                      type="button"
+                      className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left transition-colors hover:bg-white/[0.03]"
+                    >
+                      <div>
+                        <p className="section-label mb-0">Analysis pipeline</p>
+                        <p className="font-body text-xs mt-1" style={{ color: "hsl(var(--text-tertiary))" }}>
+                          How your CAS moved through the 9 agents (completed run)
+                        </p>
+                      </div>
+                      <ChevronDown className="h-5 w-5 shrink-0 text-[hsl(var(--text-tertiary))] transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent forceMount>
+                      <div className="border-t border-white/10 px-2 pb-4 pt-2">
+                        <AgentDAG mode="static" events={[]} className="h-[480px] rounded-lg" />
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </TabsContent>
+
+                <TabsContent value="planning" className="mt-6 space-y-8">
+                  <EmergencyFundCheck funds={originalData.funds} />
+                  {showPlannerAndTax ? (
+                    <>
+                      <GoalPlanner data={data} />
+                      <TaxInsights data={data} />
+                      <TaxRegimeCompare data={originalData} />
+                    </>
+                  ) : null}
+                </TabsContent>
+              </Tabs>
+
+              <footer className="py-16 text-center">
+                <p className="font-body text-[13px]" style={{ color: "hsl(var(--text-tertiary))" }}>
+                  {footerLabel ?? "ArthSaathi (अर्थसाथी) — Built for ET AI Hackathon 2026"}
+                </p>
+              </footer>
+            </>
+          )}
         </div>
       </div>
     </div>

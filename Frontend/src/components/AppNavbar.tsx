@@ -11,7 +11,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const NAV_LINKS = [
-  { to: "/analyze", label: "X-Ray" },
+  { to: "/dashboard", label: "Home" },
   { to: "/tax", label: "Tax" },
   { to: "/fire", label: "FIRE" },
   { to: "/mentor", label: "Mentor" },

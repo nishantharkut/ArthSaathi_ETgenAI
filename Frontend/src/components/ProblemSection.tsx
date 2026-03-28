@@ -73,7 +73,7 @@ export default function ProblemSection() {
     <div ref={sectionRef} className="overflow-hidden relative">
       {/* Header above pinned zone */}
       <div className="max-w-[1080px] mx-auto px-6 md:px-10 pt-20 pb-6">
-        <p className="font-syne font-medium text-[11px] text-text-tertiary uppercase tracking-[3px] mb-3">
+        <p className="font-syne font-medium text-xs text-text-tertiary uppercase tracking-[3px] mb-3">
           THE PROBLEM
         </p>
         <h2
@@ -88,7 +88,7 @@ export default function ProblemSection() {
         {/* Panel 1 */}
         <div className="problem-panel w-screen h-screen flex items-center px-[5vw]">
           <div className="max-w-[420px]">
-            <p className="font-mono text-[11px] text-text-muted tracking-[2px] mb-4">
+            <p className="font-mono text-xs text-text-muted tracking-[2px] mb-4">
               Finding 01
             </p>
             <p
@@ -115,7 +115,7 @@ export default function ProblemSection() {
                 ████████████████
               </p>
             </div>
-            <p className="font-syne text-[10px] text-text-muted mt-2">
+            <p className="font-syne text-xs text-text-muted mt-2">
               [Fee disclosure. Redacted by default.]
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function ProblemSection() {
         {/* Panel 2 */}
         <div className="problem-panel w-screen h-screen flex items-center justify-center">
           <div className="text-center">
-            <p className="font-mono text-[11px] text-text-muted tracking-[2px] mb-6">
+            <p className="font-mono text-xs text-text-muted tracking-[2px] mb-6">
               Finding 02
             </p>
             <svg viewBox="0 0 280 180" width="240" className="mx-auto">
@@ -198,7 +198,7 @@ export default function ProblemSection() {
         {/* Panel 3 */}
         <div className="problem-panel w-screen h-screen flex items-center justify-end px-[5vw]">
           <div className="text-right max-w-[400px]">
-            <p className="font-mono text-[11px] text-text-muted tracking-[2px] mb-4">
+            <p className="font-mono text-xs text-text-muted tracking-[2px] mb-4">
               Finding 03
             </p>
             <p
@@ -253,7 +253,7 @@ export default function ProblemSection() {
 function MobileProblem() {
   return (
     <div className="py-14 px-6">
-      <p className="font-syne font-medium text-[11px] text-text-tertiary uppercase tracking-[3px] mb-3">
+      <p className="font-syne font-medium text-xs text-text-tertiary uppercase tracking-[3px] mb-3">
         THE PROBLEM
       </p>
       <h2
@@ -265,7 +265,7 @@ function MobileProblem() {
 
       <div className="space-y-14">
         <div>
-          <p className="font-mono text-[11px] text-text-muted tracking-[2px] mb-3">
+          <p className="font-mono text-xs text-text-muted tracking-[2px] mb-3">
             Finding 01
           </p>
           <p
@@ -282,7 +282,7 @@ function MobileProblem() {
           </p>
         </div>
         <div>
-          <p className="font-mono text-[11px] text-text-muted tracking-[2px] mb-3">
+          <p className="font-mono text-xs text-text-muted tracking-[2px] mb-3">
             Finding 02
           </p>
           <p
@@ -296,7 +296,7 @@ function MobileProblem() {
           </p>
         </div>
         <div>
-          <p className="font-mono text-[11px] text-text-muted tracking-[2px] mb-3">
+          <p className="font-mono text-xs text-text-muted tracking-[2px] mb-3">
             Finding 03
           </p>
           <p

@@ -10,7 +10,7 @@ import {
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: string })?.from ?? "/analyze";
+  const from = (location.state as { from?: string })?.from ?? "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +23,7 @@ export default function Login() {
   const [oauthLoading, setOauthLoading] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated()) navigate("/analyze", { replace: true });
+    if (isAuthenticated()) navigate("/dashboard", { replace: true });
   }, [navigate]);
 
   useEffect(() => {

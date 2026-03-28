@@ -61,7 +61,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
           {names.map((n) => (
             <div
               key={n}
-              className="font-body text-[10px] text-center px-1 py-2 truncate"
+              className="font-body text-xs text-center px-1 py-2 truncate"
               style={{ color: "hsl(var(--text-tertiary))" }}
             >
               {n.split(" ").slice(0, 2).join(" ")}
@@ -71,7 +71,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
           {/* Rows */}
           {names.map((rowName, ri) => (
             <Fragment key={rowName}>
-              <div className="font-body text-[11px] font-medium text-primary-light flex items-center pr-2 truncate">
+              <div className="font-body text-xs font-medium text-primary-light flex items-center pr-2 truncate">
                 {rowName.split(" ").slice(0, 2).join(" ")}
               </div>
               {names.map((colName, ci) => {
@@ -129,7 +129,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
               </div>
               {stock.warning && (
                 <span
-                  className="text-[10px] font-body font-medium px-2 py-0.5 rounded"
+                  className="text-xs font-body font-medium px-2 py-0.5 rounded"
                   style={{
                     background: "rgba(248,113,113,0.1)",
                     color: "hsl(var(--negative))",

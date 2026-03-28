@@ -77,7 +77,7 @@ export function SummaryCards({
             transitionDelay: `${i * 100}ms`,
           }}
         >
-          <p className="section-label text-[11px]">{card.label}</p>
+          <p className="section-label text-xs">{card.label}</p>
           <div className="flex items-center gap-2 mt-2">
             {card.icon}
             <span
@@ -105,10 +105,10 @@ export function SummaryCards({
           )}
           {card.pills && (
             <div className="flex gap-2 mt-2">
-              <span className="pill-regular text-[11px] font-medium font-body px-2 py-0.5 rounded">
+              <span className="pill-regular text-xs font-medium font-body px-2 py-0.5 rounded">
                 {summary.regular_plan_count} Regular
               </span>
-              <span className="pill-direct text-[11px] font-medium font-body px-2 py-0.5 rounded">
+              <span className="pill-direct text-xs font-medium font-body px-2 py-0.5 rounded">
                 {summary.direct_plan_count} Direct
               </span>
             </div>

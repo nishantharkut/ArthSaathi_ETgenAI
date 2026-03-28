@@ -100,7 +100,7 @@ export default function TaxWizard() {
       {usingStub && (
         <p className="font-syne text-[13px] text-text-muted mb-6">
           Upload a{" "}
-          <Link to="/analyze" className="text-accent hover:underline">
+          <Link to="/dashboard" className="text-accent hover:underline">
             CAS statement
           </Link>{" "}
           for personalized tax estimates based on your actual portfolio.
