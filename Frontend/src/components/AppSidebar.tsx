@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
@@ -48,6 +48,7 @@ function NavItem({
   expanded: ex,
   disabled,
   onAfterNavigate,
+  activateOnPathnames,
 }: {
   to: string;
   end?: boolean;
@@ -56,17 +57,23 @@ function NavItem({
   expanded: boolean;
   disabled?: boolean;
   onAfterNavigate?: () => void;
+  /** Treat NavLink as active on these paths (e.g. /demo → highlight Analyze). */
+  activateOnPathnames?: string[];
 }) {
-  const body = ({ isActive }: { isActive: boolean }) =>
-    cn(
+  const location = useLocation();
+  const body = ({ isActive }: { isActive: boolean }) => {
+    const alsoActive = activateOnPathnames?.includes(location.pathname) ?? false;
+    const active = isActive || alsoActive;
+    return cn(
       "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-xs font-syne font-medium",
       !ex && "justify-center",
       disabled && "pointer-events-none opacity-40",
       !disabled &&
-        (isActive
+        (active
           ? "bg-white/[0.06] text-[hsl(var(--text-primary))] border-l-2 border-[hsl(var(--accent))]"
           : "text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-secondary))] hover:bg-white/[0.03] border-l-2 border-transparent"),
     );
+  };
 
   const inner = (
     <>
@@ -221,6 +228,7 @@ export function AppSidebar({
             icon={Search}
             label="Portfolio X-Ray"
             expanded={showExpanded}
+            activateOnPathnames={["/demo"]}
             onAfterNavigate={() => isMobile && onMobileOpenChange(false)}
           />
           <NavItem

@@ -148,11 +148,9 @@ const App = () => {
               <Route
                 path="/demo"
                 element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <Demo />
-                    </AppLayout>
-                  </AuthGuard>
+                  <AppLayout>
+                    <Demo />
+                  </AppLayout>
                 }
               />
 
