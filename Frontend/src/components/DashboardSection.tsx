@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import {
   LineChart,
@@ -24,7 +24,7 @@ const healthData = [{ value: 41, fill: "hsl(44 96% 56%)" }];
 export default function DashboardSection() {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         cardRef.current,
@@ -118,10 +118,10 @@ export default function DashboardSection() {
                 />
               </RadialBarChart>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-mono font-bold text-[28px] text-warning">
+                <span className="font-mono text-[28px] font-bold tabular-nums text-warning">
                   41
                 </span>
-                <span className="font-mono text-[13px] text-text-muted">
+                <span className="font-mono text-[13px] tabular-nums text-text-muted">
                   / 100
                 </span>
                 <span className="font-syne font-semibold text-xs text-warning tracking-wider mt-1">
@@ -133,23 +133,19 @@ export default function DashboardSection() {
 
           {/* Fee cell */}
           <div>
-            <p className="font-syne text-xs text-text-muted tracking-[2px] uppercase">
-              ANNUAL FEE DRAIN
-            </p>
-            <p className="font-mono font-semibold text-[24px] text-negative mt-1">
+            <p className="section-label">Annual fee drain</p>
+            <p className="mt-1 font-mono text-[24px] font-semibold tabular-nums text-negative">
               ₹40,697
             </p>
             <p className="font-syne text-[12px] text-text-muted">
-              1.82% of portfolio
+              <span className="font-mono-dm tabular-nums">1.82%</span> of portfolio
             </p>
           </div>
 
           {/* Overlap cell */}
           <div>
-            <p className="font-syne text-xs text-text-muted tracking-[2px] uppercase">
-              PORTFOLIO OVERLAP
-            </p>
-            <p className="font-mono font-semibold text-[24px] text-warning mt-1">
+            <p className="section-label">Portfolio overlap</p>
+            <p className="mt-1 font-mono text-[24px] font-semibold tabular-nums text-warning">
               45.2%
             </p>
             <p className="font-syne text-[12px] text-text-muted">

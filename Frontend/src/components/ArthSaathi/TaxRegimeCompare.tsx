@@ -47,6 +47,9 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
   const [s80d, setS80d] = useState("25000");
   const [ccd1b, setCcd1b] = useState("50000");
   const [homeLoan, setHomeLoan] = useState("0");
+  const [ltaAnnual, setLtaAnnual] = useState("0");
+  const [eduLoan80e, setEduLoan80e] = useState("0");
+  const [otherOldDed, setOtherOldDed] = useState("0");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<TaxRegimeCompareResponse | null>(null);
@@ -67,6 +70,9 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
         section_80ccd1b: parseAmountField(ccd1b),
         home_loan_interest: parseAmountField(homeLoan),
         elss_from_portfolio: elss,
+        lta_exemption_annual: parseAmountField(ltaAnnual),
+        education_loan_interest_80e: parseAmountField(eduLoan80e),
+        other_old_regime_deductions: parseAmountField(otherOldDed),
       };
       const token = await getAccessToken();
       if (!token) {
@@ -131,7 +137,9 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
           <div className="space-y-6">
             {elss > 0 ? (
               <p className="font-syne text-xs text-text-secondary">
-                ELSS in portfolio (toward 80C cap): ₹{(elss / 100000).toFixed(2)}L auto-included
+                ELSS in portfolio (toward 80C cap):{" "}
+                <span className="font-mono-dm tabular-nums">₹{(elss / 100000).toFixed(2)}L</span>{" "}
+                auto-included
               </p>
             ) : null}
 
@@ -163,6 +171,16 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
                   value={rentAnnual}
                   onChange={(e) => setRentAnnual(e.target.value)}
                   placeholder="₹3,00,000"
+                  inputMode="numeric"
+                  className={inputClass}
+                />
+              </label>
+              <label className="font-syne block space-y-1 text-xs">
+                <span className="text-text-tertiary">LTA exemption (annual, old regime)</span>
+                <Input
+                  value={ltaAnnual}
+                  onChange={(e) => setLtaAnnual(e.target.value)}
+                  placeholder="₹0"
                   inputMode="numeric"
                   className={inputClass}
                 />
@@ -221,6 +239,26 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
                   className={inputClass}
                 />
               </label>
+              <label className="font-syne block space-y-1 text-xs">
+                <span className="text-text-tertiary">Education loan interest (80E, old regime)</span>
+                <Input
+                  value={eduLoan80e}
+                  onChange={(e) => setEduLoan80e(e.target.value)}
+                  placeholder="₹0"
+                  inputMode="numeric"
+                  className={inputClass}
+                />
+              </label>
+              <label className="font-syne block space-y-1 text-xs">
+                <span className="text-text-tertiary">Other old-regime deductions (capped)</span>
+                <Input
+                  value={otherOldDed}
+                  onChange={(e) => setOtherOldDed(e.target.value)}
+                  placeholder="₹0"
+                  inputMode="numeric"
+                  className={inputClass}
+                />
+              </label>
             </div>
 
             <Button type="button" onClick={() => void compare()} disabled={loading}>
@@ -234,16 +272,28 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
               <>
                 <div className="rounded-lg px-4 py-3" style={recBannerStyle}>
                   <span className="font-syne text-sm font-medium" style={{ color: recTextColor }}>
-                    Lower tax: {recNew ? "New regime" : "Old regime"} · Save {result.savings_display}
+                    Lower tax: {recNew ? "New regime" : "Old regime"} · Save{" "}
+                    <span className="font-mono-dm tabular-nums">{result.savings_display}</span>
                   </span>
                 </div>
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                      <XAxis dataKey="name" tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 11 }} />
+                      <XAxis
+                        dataKey="name"
+                        tick={{
+                          fill: "hsl(var(--text-secondary))",
+                          fontSize: 11,
+                          fontFamily: "DM Mono, ui-monospace, monospace",
+                        }}
+                      />
                       <YAxis
-                        tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 10 }}
+                        tick={{
+                          fill: "hsl(var(--text-secondary))",
+                          fontSize: 10,
+                          fontFamily: "DM Mono, ui-monospace, monospace",
+                        }}
                         tickFormatter={(v) => `₹${(Number(v) / 100000).toFixed(1)}L`}
                       />
                       <Tooltip

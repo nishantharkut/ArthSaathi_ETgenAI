@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 
 const FEATURES = [
@@ -43,7 +43,7 @@ const FEATURES = [
 export default function FeaturesSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const cols = sectionRef.current?.querySelectorAll(".feature-col");
       if (!cols) return;

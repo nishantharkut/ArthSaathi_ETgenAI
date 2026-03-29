@@ -237,7 +237,7 @@ const ChartTooltipContent = React.forwardRef<
                         </span>
                       </div>
                       {item.value != null && (
-                        <span className="font-mono font-medium tabular-nums text-foreground">
+                        <span className="font-mono-dm font-medium tabular-nums text-foreground">
                           {typeof item.value === "number"
                             ? item.value.toLocaleString()
                             : String(item.value)}

@@ -92,7 +92,7 @@ export function HealthScore({ data }: HealthScoreProps) {
               />
             </svg>
             <span
-              className="absolute inset-0 flex items-center justify-center font-mono-dm text-6xl font-bold"
+              className="absolute inset-0 flex items-center justify-center font-mono-dm text-6xl font-bold tabular-nums"
               style={{ color: gradeLetterColor(data.grade) }}
             >
               {visible ? data.score : 0}
@@ -130,7 +130,7 @@ export function HealthScore({ data }: HealthScoreProps) {
                     {dimensionNames[key]}
                   </span>
                   <span
-                    className="font-mono-dm text-sm"
+                    className="font-mono-dm text-sm tabular-nums"
                     style={{ color: "hsl(var(--text-secondary))" }}
                   >
                     {dim.score} / {dim.max}

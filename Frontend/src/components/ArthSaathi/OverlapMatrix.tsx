@@ -46,7 +46,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
     }
     rows.sort((x, y) => y.overlap - x.overlap);
     return rows.slice(0, 5);
-  }, [data.matrix, equityFunds.length]);
+  }, [data.matrix, equityFunds]);
 
   if (equityFunds.length < 2) {
     return (
@@ -90,20 +90,21 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
           <p className="section-label">Top overlaps</p>
           {sortedPairs.map((pair, i) => {
             const o = pair.overlap;
-            const heat = Math.min(1, o / 40);
+            const g = Math.max(0, Math.round(180 - o * 1.5));
+            const a = Math.min(0.5, o / 200);
             return (
               <div
                 key={`${pair.fund_a_short}-${pair.fund_b_short}-${i}`}
-                className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.06] px-3 py-2"
+                className="flex items-center justify-between gap-2 rounded-lg px-3 py-2"
                 style={{
-                  background: `rgba(248, 113, 113, ${0.06 + heat * 0.14})`,
+                  background: `rgba(255, ${g}, 50, ${a})`,
                 }}
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-syne text-xs text-text-primary">{pair.fund_a_short}</p>
                   <p className="truncate font-syne text-xs text-text-muted">{pair.fund_b_short}</p>
                 </div>
-                <span className="ml-2 shrink-0 font-mono text-sm text-text-primary">
+                <span className="ml-2 shrink-0 font-mono text-sm tabular-nums text-text-primary">
                   {o.toFixed(0)}%
                 </span>
               </div>
@@ -147,7 +148,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
                 return (
                   <div
                     key={`${ri}-${ci}`}
-                    className="flex items-center justify-center rounded-md font-mono-dm text-xs p-3 transition-transform duration-150 hover:scale-105"
+                    className="flex items-center justify-center rounded-md font-mono-dm text-xs tabular-nums p-3 transition-transform duration-150 hover:scale-105"
                     style={{ background: style.bg, color: style.color }}
                   >
                     {isDiag ? "—" : `${overlap?.toFixed(1)}%`}
