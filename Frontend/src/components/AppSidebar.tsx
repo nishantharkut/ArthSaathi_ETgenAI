@@ -1,20 +1,23 @@
-import { useEffect, useState, type ComponentType } from "react";
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState, type CSSProperties, type ElementType } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
   LogIn,
-  LogOut,
   MessageCircle,
+  Play,
   Scale,
   Search,
+  Settings,
   Target,
   ToggleRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { fetchMe, signOut } from "@/lib/auth";
+import { compactINR } from "@/lib/format";
+import { onProfileUpdated, resolveSidebarIdentity } from "@/lib/settings";
 import { useAnalysis } from "@/context/analysis-context";
+import { UserSettingsDropdown } from "@/components/UserSettingsDropdown";
 import {
   Tooltip,
   TooltipContent,
@@ -23,6 +26,16 @@ import {
 
 /** Vite serves `Frontend/public/logo.webp` at `/logo.webp`. */
 const LOGO_SRC = "/logo.webp";
+
+function healthBadgeStyle(grade: string): CSSProperties {
+  const g = (grade || "").toUpperCase();
+  let color = "hsl(var(--text-secondary))";
+  if (g === "A") color = "hsl(var(--positive))";
+  else if (g === "B") color = "hsl(var(--chart-2))";
+  else if (g === "C") color = "hsl(var(--warning))";
+  else if (g === "D" || g === "F") color = "hsl(var(--negative))";
+  return { color, borderColor: `${color}40` };
+}
 
 export interface AppSidebarProps {
   expanded: boolean;
@@ -77,7 +90,7 @@ function NavItem({
 }: {
   to: string;
   end?: boolean;
-  icon: ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
+  icon: ElementType<{ size?: number | string; strokeWidth?: number | string; className?: string }>;
   label: string;
   expanded: boolean;
   disabled?: boolean;
@@ -143,6 +156,10 @@ function NavItem({
   return link;
 }
 
+const closeMobileIfNeeded = (isMobile: boolean, onMobileOpenChange: (o: boolean) => void) => {
+  if (isMobile) onMobileOpenChange(false);
+};
+
 export function AppSidebar({
   expanded,
   onToggleExpanded,
@@ -151,7 +168,6 @@ export function AppSidebar({
   isMobile,
   guestMode = false,
 }: AppSidebarProps) {
-  const navigate = useNavigate();
   const location = useLocation();
   const { state } = useAnalysis();
   const hasResult = Boolean(state.result);
@@ -165,29 +181,26 @@ export function AppSidebar({
       return;
     }
     let cancelled = false;
-    fetchMe()
-      .then((u) => {
-        if (cancelled) return;
-        const e = u.email || "";
-        setEmail(e);
-        const d = (u.username || e || "U").trim();
-        setInitial(d.charAt(0).toUpperCase());
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setEmail("");
-        setInitial("?");
-      });
+    const load = () => {
+      resolveSidebarIdentity()
+        .then(({ email: e, initial: letter }) => {
+          if (cancelled) return;
+          setEmail(e);
+          setInitial(letter);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setEmail("");
+          setInitial("?");
+        });
+    };
+    load();
+    const off = onProfileUpdated(load);
     return () => {
       cancelled = true;
+      off();
     };
   }, [guestMode]);
-
-  const handleSignOut = async () => {
-    await signOut();
-    onMobileOpenChange(false);
-    navigate("/login");
-  };
 
   const showExpanded = isMobile ? true : expanded;
   const collapsedDesktop = !isMobile && !expanded;
@@ -199,6 +212,8 @@ export function AppSidebar({
 
   const toggleBtnClass =
     "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-white/[0.08] hover:text-text-secondary";
+
+  const afterNav = () => closeMobileIfNeeded(isMobile, onMobileOpenChange);
 
   const aside = (
     <aside
@@ -239,7 +254,7 @@ export function AppSidebar({
           <Link
             to="/dashboard"
             className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-1 py-1 no-underline outline-none ring-offset-2 ring-offset-[hsl(var(--sidebar-background))] transition-colors hover:bg-white/[0.05] focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))]"
-            onClick={() => isMobile && onMobileOpenChange(false)}
+            onClick={() => closeMobileIfNeeded(isMobile, onMobileOpenChange)}
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04]">
               <SidebarLogoMark className="h-8 w-8" />
@@ -287,7 +302,7 @@ export function AppSidebar({
           icon={LayoutDashboard}
           label="Dashboard"
           expanded={showExpanded}
-          onAfterNavigate={() => isMobile && onMobileOpenChange(false)}
+          onAfterNavigate={afterNav}
         />
         <NavItem
           to="/analyze"
@@ -295,7 +310,7 @@ export function AppSidebar({
           label="Portfolio X-Ray"
           expanded={showExpanded}
           activateOnPathnames={["/demo"]}
-          onAfterNavigate={() => isMobile && onMobileOpenChange(false)}
+          onAfterNavigate={afterNav}
         />
         <NavItem
           to="/analyze/report"
@@ -303,7 +318,7 @@ export function AppSidebar({
           label="What-If"
           expanded={showExpanded}
           disabled={!hasResult}
-          onAfterNavigate={() => isMobile && onMobileOpenChange(false)}
+          onAfterNavigate={afterNav}
         />
 
         <div
@@ -316,25 +331,66 @@ export function AppSidebar({
           icon={Scale}
           label="Tax Calculator"
           expanded={showExpanded}
-          onAfterNavigate={() => isMobile && onMobileOpenChange(false)}
+          onAfterNavigate={afterNav}
         />
         <NavItem
           to="/fire"
           icon={Target}
           label="FIRE Planner"
           expanded={showExpanded}
-          onAfterNavigate={() => isMobile && onMobileOpenChange(false)}
+          onAfterNavigate={afterNav}
         />
         <NavItem
           to="/mentor"
           icon={MessageCircle}
           label="AI Mentor"
           expanded={showExpanded}
-          onAfterNavigate={() => isMobile && onMobileOpenChange(false)}
+          onAfterNavigate={afterNav}
+        />
+
+        <div
+          className="my-4 h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent"
+          role="separator"
+        />
+        {!guestMode ? (
+          <NavItem
+            to="/settings"
+            icon={Settings}
+            label="Settings"
+            expanded={showExpanded}
+            onAfterNavigate={afterNav}
+          />
+        ) : null}
+        <NavItem
+          to="/demo"
+          icon={Play}
+          label="Try Demo"
+          expanded={showExpanded}
+          onAfterNavigate={afterNav}
         />
       </nav>
 
-      <div className="shrink-0 border-t border-white/[0.08] p-2.5">
+      <div className="mt-auto flex shrink-0 flex-col gap-2 border-t border-white/[0.08] p-2.5">
+        {!guestMode && hasResult && state.result ? (
+          <div
+            className={cn(
+              "rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5",
+              !showExpanded && "hidden",
+            )}
+          >
+            <p className="mb-1 font-syne text-xs text-text-muted">Last analysis</p>
+            <p className="font-mono-dm text-xs tabular-nums text-text-secondary">
+              {state.result.portfolio_summary.total_funds} funds ·{" "}
+              {compactINR(state.result.portfolio_summary.total_current_value)}
+            </p>
+            <span
+              className="mt-1 inline-block rounded-md border px-1.5 py-0.5 font-mono-dm text-xs tabular-nums"
+              style={healthBadgeStyle(state.result.health_score.grade)}
+            >
+              {state.result.health_score.grade} · {state.result.health_score.score}
+            </span>
+          </div>
+        ) : null}
         {guestMode ? (
           <div
             className={cn(
@@ -353,7 +409,7 @@ export function AppSidebar({
                 to="/login"
                 state={{ from: location.pathname }}
                 className="min-w-0 flex-1 rounded-lg border border-white/[0.1] px-2 py-2 text-center font-syne text-xs font-semibold text-accent transition-colors hover:bg-white/[0.04] no-underline"
-                onClick={() => isMobile && onMobileOpenChange(false)}
+                onClick={() => closeMobileIfNeeded(isMobile, onMobileOpenChange)}
               >
                 Sign in
               </Link>
@@ -365,7 +421,7 @@ export function AppSidebar({
                     state={{ from: location.pathname }}
                     className="inline-flex rounded-lg p-2 text-accent transition-colors hover:bg-white/[0.06] no-underline"
                     aria-label="Sign in"
-                    onClick={() => isMobile && onMobileOpenChange(false)}
+                    onClick={() => closeMobileIfNeeded(isMobile, onMobileOpenChange)}
                   >
                     <LogIn size={18} strokeWidth={1.5} />
                   </Link>
@@ -375,48 +431,12 @@ export function AppSidebar({
             )}
           </div>
         ) : (
-          <div
-            className={cn(
-              "flex items-center gap-2",
-              !showExpanded && "flex-col gap-2",
-            )}
-          >
-            <div
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-white/[0.12] to-white/[0.06] font-syne text-xs font-semibold text-text-primary ring-1 ring-white/[0.08]"
-              title={email}
-            >
-              {initial}
-            </div>
-            {showExpanded ? (
-              <>
-                <span className="min-w-0 flex-1 truncate font-syne text-[11px] leading-tight text-text-muted">
-                  {email || "—"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => void handleSignOut()}
-                  className="shrink-0 rounded-lg p-2 text-text-muted transition-colors hover:bg-white/[0.06] hover:text-[hsl(var(--negative))]"
-                  aria-label="Sign out"
-                >
-                  <LogOut size={18} strokeWidth={1.5} />
-                </button>
-              </>
-            ) : (
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={() => void handleSignOut()}
-                    className="rounded-lg p-2 text-text-muted transition-colors hover:bg-white/[0.06] hover:text-[hsl(var(--negative))]"
-                    aria-label="Sign out"
-                  >
-                    <LogOut size={18} strokeWidth={1.5} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right">Sign out</TooltipContent>
-              </Tooltip>
-            )}
-          </div>
+          <UserSettingsDropdown
+            email={email}
+            initial={initial}
+            expanded={showExpanded}
+            onMenuAction={() => closeMobileIfNeeded(isMobile, onMobileOpenChange)}
+          />
         )}
       </div>
     </aside>
