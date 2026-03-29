@@ -40,7 +40,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setSidebarExpanded((e) => !e);
   }, []);
 
-  const mainMarginLeft = isMobile ? 0 : sidebarExpanded ? 240 : 56;
+  /** Match AppSidebar: w-64 expanded (256px), w-16 collapsed (64px). */
+  const mainMarginLeft = isMobile ? 0 : sidebarExpanded ? 256 : 64;
   const isDemoRoute = location.pathname === "/demo";
   const demoGuest = isDemoRoute && !sessionLoading && !session;
   /** Full-page mentor has its own UI; demo guests have no session for chat. */
