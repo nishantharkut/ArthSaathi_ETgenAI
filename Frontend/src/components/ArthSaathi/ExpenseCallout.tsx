@@ -18,7 +18,7 @@ export function ExpenseCallout({
   return (
     <div
       ref={ref}
-      className="text-center p-12 rounded-2xl"
+      className="text-center p-12 rounded-[9px]"
       style={{
         background:
           "linear-gradient(135deg, rgba(248,113,113,0.08), rgba(248,113,113,0.03))",
@@ -34,7 +34,7 @@ export function ExpenseCallout({
       >
         Your portfolio is losing
       </p>
-      <p className="font-mono-dm text-[56px] font-bold text-negative negative-glow mt-2">
+      <p className="font-mono text-4xl sm:text-5xl lg:text-[56px] font-bold tabular-nums text-negative negative-glow mt-2">
         {compactINR(lossVal)}
       </p>
       <p
@@ -55,7 +55,7 @@ export function ExpenseCallout({
       >
         Switching to direct plans saves
       </p>
-      <p className="font-mono-dm text-[28px] font-semibold text-positive positive-glow mt-1">
+      <p className="font-mono-dm text-[28px] font-semibold tabular-nums text-positive positive-glow mt-1">
         {compactINR(saveVal)}
       </p>
     </div>

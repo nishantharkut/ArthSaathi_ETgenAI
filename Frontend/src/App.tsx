@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
@@ -27,6 +27,7 @@ import MentorPage from "./pages/MentorPage";
 import Settings from "./pages/Settings";
 import Demo from "./pages/Demo";
 import NotFound from "./pages/NotFound";
+import { scrollDocumentToTop, setAppLenis } from "@/lib/appLenis";
 
 const queryClient = new QueryClient();
 
@@ -34,52 +35,70 @@ function ScrollToTop() {
   const location = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
+    scrollDocumentToTop();
   }, [location.pathname]);
 
   return null;
 }
 
 const App = () => {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
-    // Keep ScrollTrigger in sync with Lenis-driven scroll updates.
-    const handleLenisScroll = () => {
+    setAppLenis(lenis);
+
+    const onLenisScroll = () => {
       ScrollTrigger.update();
     };
+    lenis.on("scroll", onLenisScroll);
 
-    lenis.on("scroll", handleLenisScroll);
-    const raf = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(raf);
+    const onTick = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(onTick);
     gsap.ticker.lagSmoothing(0);
 
+    const onResize = () => {
+      lenis.resize();
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener("resize", onResize);
+
+    lenis.resize();
+    const refreshRaf = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+
     return () => {
-      lenis.off("scroll", handleLenisScroll);
+      cancelAnimationFrame(refreshRaf);
+      window.removeEventListener("resize", onResize);
+      lenis.off("scroll", onLenisScroll);
       lenis.destroy();
-      gsap.ticker.remove(raf);
+      gsap.ticker.remove(onTick);
+      setAppLenis(null);
+      ScrollTrigger.refresh();
     };
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionProvider>
-        <AnalysisProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter
-              future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true,
-              }}
-            >
-              <AppErrorBoundary>
-                <ScrollToTop />
-                <Routes>
+        <SessionProvider>
+          <AnalysisProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter
+                future={{
+                  v7_startTransition: true,
+                  v7_relativeSplatPath: true,
+                }}
+              >
+                <AppErrorBoundary>
+                  <ScrollToTop />
+                  <Routes>
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
@@ -186,13 +205,13 @@ const App = () => {
 
                   <Route path="/app" element={<Navigate to="/dashboard" replace />} />
                   <Route path="*" element={<NotFound />} />
-                </Routes>
-              </AppErrorBoundary>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AnalysisProvider>
-      </SessionProvider>
-    </QueryClientProvider>
+                  </Routes>
+                </AppErrorBoundary>
+              </BrowserRouter>
+            </TooltipProvider>
+          </AnalysisProvider>
+        </SessionProvider>
+      </QueryClientProvider>
   );
 };
 

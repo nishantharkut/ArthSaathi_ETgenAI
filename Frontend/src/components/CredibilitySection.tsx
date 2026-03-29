@@ -1,11 +1,11 @@
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 
 export default function CredibilitySection() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const lines = sectionRef.current?.querySelectorAll(".cred-line");
       if (lines) {

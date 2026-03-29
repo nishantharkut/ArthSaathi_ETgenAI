@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 
@@ -13,7 +13,7 @@ export default function HeroSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const svgPathRef = useRef<SVGPolylineElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.2 });
 
@@ -163,7 +163,7 @@ export default function HeroSection() {
         {/* Fee line */}
         <div
           ref={feeLineRef}
-          className="font-fraunces text-negative text-[44px] md:text-[64px] leading-none tracking-tight"
+          className="font-fraunces text-negative text-[32px] leading-none tracking-tight tabular-nums sm:text-[44px] md:text-[64px]"
           style={{
             fontVariationSettings: "'opsz' 144, 'wght' 700",
             letterSpacing: "-0.02em",
@@ -258,7 +258,7 @@ export default function HeroSection() {
       {/* Scroll indicator */}
       <div
         ref={scrollRef}
-        className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center"
+        className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center md:flex"
       >
         <div className="relative w-[1px] h-[48px] bg-text-muted">
           <div className="scroll-dot absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-text-secondary" />

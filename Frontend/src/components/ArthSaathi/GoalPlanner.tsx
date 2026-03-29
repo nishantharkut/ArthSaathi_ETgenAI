@@ -140,8 +140,12 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
         style={{ background: "hsl(var(--bg-secondary))" }}
       >
         <p className="font-syne text-text-muted">{p.yearLabel}</p>
-        <p className="font-mono-dm text-text-primary">Corpus {compactINR(p.corpus)}</p>
-        <p className="font-mono-dm text-text-tertiary">Invested {compactINR(p.invested)}</p>
+        <p className="font-mono-dm tabular-nums text-text-primary">
+          Corpus {compactINR(p.corpus)}
+        </p>
+        <p className="font-mono-dm tabular-nums text-text-tertiary">
+          Invested {compactINR(p.invested)}
+        </p>
       </div>
     );
   };
@@ -185,7 +189,7 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
             ))}
           </div>
 
-          <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-end">
+          <div className="flex flex-col gap-4 lg:flex-row lg:flex-nowrap lg:items-end">
             {goalType === "custom" ? (
               <label className="font-syne min-w-[200px] flex-1 text-xs space-y-1">
                 <span className="text-text-tertiary">Target corpus</span>
@@ -199,7 +203,7 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
               </label>
             ) : null}
 
-            <div className="min-w-[200px] flex-1 space-y-1">
+            <div className="min-w-0 flex-1 space-y-1 lg:min-w-[220px]">
               <span className="font-syne text-xs text-text-tertiary">Target year ({YEAR_MIN}–{YEAR_MAX})</span>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <Input
@@ -231,7 +235,7 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
               </div>
             </div>
 
-            <label className="font-syne min-w-[160px] flex-1 text-xs space-y-1">
+            <label className="font-syne min-w-[160px] flex-1 text-xs space-y-1 lg:shrink-0">
               <span className="text-text-tertiary">Monthly SIP (₹)</span>
               <Input
                 type="number"
@@ -279,15 +283,39 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
               className="rounded-lg p-4 space-y-3 border border-white/10"
               style={{ background: "rgba(0,0,0,0.2)" }}
             >
+              <div className="grid grid-cols-2 gap-3">
+                <div className="card-arth p-3">
+                  <p className="section-label">Extra monthly SIP</p>
+                  <p className="font-mono text-xl text-text-primary tabular-nums mt-1">
+                    {result.gap_analysis.additional_sip_display}
+                  </p>
+                </div>
+                <div className="card-arth p-3">
+                  <p className="section-label">Inflation-adjusted target</p>
+                  <p className="font-mono text-xl text-text-primary tabular-nums mt-1">
+                    {result.goal.inflation_adjusted_display}
+                  </p>
+                </div>
+              </div>
               <p className="font-body text-sm" style={{ color: "hsl(var(--text-secondary))" }}>
-                Goal ({result.goal.type}): <strong>{result.goal.inflation_adjusted_display}</strong> by{" "}
-                {result.goal.target_year}. You project <strong>{result.current_trajectory.projected_display}</strong>{" "}
+                Goal ({result.goal.type}):{" "}
+                <strong className="font-mono-dm tabular-nums text-text-primary">
+                  {result.goal.inflation_adjusted_display}
+                </strong>{" "}
+                by{" "}
+                <span className="font-mono-dm tabular-nums text-text-primary">
+                  {result.goal.target_year}
+                </span>
+                . You project{" "}
+                <strong className="font-mono-dm tabular-nums text-text-primary">
+                  {result.current_trajectory.projected_display}
+                </strong>{" "}
                 at current pace.
               </p>
               <div>
                 <div className="flex justify-between text-xs mb-1" style={{ color: "hsl(var(--text-tertiary))" }}>
                   <span>Progress vs inflation-adjusted target</span>
-                  <span>{onTrackPct}%</span>
+                  <span className="font-mono-dm tabular-nums">{onTrackPct}%</span>
                 </div>
                 <div className="h-2 rounded-full bg-white/10 overflow-hidden">
                   <div
@@ -305,8 +333,14 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
                 </div>
               </div>
               <p className="font-body text-sm" style={{ color: "hsl(var(--text-secondary))" }}>
-                Gap: <strong>{result.gap_analysis.shortfall_display}</strong>. Extra SIP:{" "}
-                <strong>{result.gap_analysis.additional_sip_display}</strong>
+                Gap:{" "}
+                <strong className="font-mono-dm tabular-nums text-text-primary">
+                  {result.gap_analysis.shortfall_display}
+                </strong>
+                . Extra SIP:{" "}
+                <strong className="font-mono-dm tabular-nums text-text-primary">
+                  {result.gap_analysis.additional_sip_display}
+                </strong>
               </p>
 
               {chartData.length > 0 ? (
@@ -337,12 +371,20 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
                         </defs>
                         <XAxis
                           dataKey="yearLabel"
-                          tick={{ fontSize: 10, fill: "hsl(var(--text-tertiary))" }}
+                          tick={{
+                            fontSize: 10,
+                            fontFamily: "DM Mono, ui-monospace, monospace",
+                            fill: "hsl(var(--text-secondary))",
+                          }}
                           axisLine={false}
                           tickLine={false}
                         />
                         <YAxis
-                          tick={{ fontSize: 10, fill: "hsl(var(--text-tertiary))" }}
+                          tick={{
+                            fontSize: 10,
+                            fontFamily: "DM Mono, ui-monospace, monospace",
+                            fill: "hsl(var(--text-secondary))",
+                          }}
                           axisLine={false}
                           tickLine={false}
                           tickFormatter={(v) => axisShort(Number(v))}
@@ -374,8 +416,8 @@ export function GoalPlanner({ data }: GoalPlannerProps) {
                         key={`${r.year}-${r.age}`}
                         className="min-w-[76px] shrink-0 border-l-2 border-[hsl(var(--accent))] pl-2"
                       >
-                        <p className="font-mono text-[10px] text-text-muted">{r.year}</p>
-                        <p className="font-mono-dm text-[11px] text-text-primary leading-tight">
+                        <p className="font-mono text-[10px] tabular-nums text-text-muted">{r.year}</p>
+                        <p className="font-mono-dm text-[11px] leading-tight tabular-nums text-text-primary">
                           {r.corpus_display}
                         </p>
                       </div>

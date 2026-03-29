@@ -370,14 +370,17 @@ export default function AnalyzeProcessing() {
               <p className="font-body text-sm mt-2" style={{ color: "hsl(var(--text-secondary))" }}>
                 9/9 orchestration steps finished
                 {completionMeta != null && completionMeta.processingMs > 0 ? (
-                  <span className="block mt-1 font-mono-dm text-xs" style={{ color: "hsl(var(--text-tertiary))" }}>
+                  <span
+                    className="mt-1 block font-mono-dm text-xs tabular-nums"
+                    style={{ color: "hsl(var(--text-tertiary))" }}
+                  >
                     Pipeline time {(completionMeta.processingMs / 1000).toFixed(1)}s
                   </span>
                 ) : null}
               </p>
               <p className="font-body text-sm mt-5" style={{ color: "hsl(var(--text-tertiary))" }}>
                 Opening your report in{" "}
-                <span className="font-mono-dm text-accent">{secondsLeft}</span>s…
+                <span className="font-mono-dm tabular-nums text-accent">{secondsLeft}</span>s…
               </p>
               <button
                 type="button"

@@ -290,7 +290,7 @@ export function AppSidebar({
 
         <p
           className={cn(
-            "font-mono text-xs text-text-muted uppercase tracking-[2px] px-3 mb-1",
+            "section-label px-3 mb-1",
             !showExpanded && "sr-only",
           )}
         >
@@ -325,12 +325,12 @@ export function AppSidebar({
             )}
           >
             <p className="font-syne text-xs text-text-muted mb-1">Last analysis</p>
-            <p className="font-mono text-xs text-text-secondary">
+            <p className="font-mono-dm text-xs tabular-nums text-text-secondary">
               {state.result.portfolio_summary.total_funds} funds ·{" "}
               {compactINR(state.result.portfolio_summary.total_current_value)}
             </p>
             <span
-              className="mt-1 inline-block rounded border px-1.5 py-0.5 font-mono text-xs"
+              className="mt-1 inline-block rounded border px-1.5 py-0.5 font-mono-dm text-xs tabular-nums"
               style={healthBadgeStyle(state.result.health_score.grade)}
             >
               {state.result.health_score.grade} · {state.result.health_score.score}

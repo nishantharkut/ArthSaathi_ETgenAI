@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import {
   LineChart,
@@ -24,7 +24,7 @@ const healthData = [{ value: 41, fill: "hsl(44 96% 56%)" }];
 export default function DashboardSection() {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         cardRef.current,
@@ -100,31 +100,31 @@ export default function DashboardSection() {
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr_1fr] gap-4 p-5">
           {/* Health ring */}
           <div className="flex flex-col items-center justify-center md:row-span-2">
-            <div className="relative">
-              <RadialBarChart
-                width={200}
-                height={160}
-                innerRadius="70%"
-                outerRadius="100%"
-                data={healthData}
-                startAngle={90}
-                endAngle={-270}
-                barSize={8}
-              >
-                <RadialBar
-                  dataKey="value"
-                  cornerRadius={4}
-                  background={{ fill: "hsl(220 15% 14%)" }}
-                />
-              </RadialBarChart>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-mono font-bold text-[28px] text-warning">
+            <div className="relative h-[120px] w-[120px] sm:h-[140px] sm:w-[140px] md:h-[180px] md:w-[180px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadialBarChart
+                  innerRadius="70%"
+                  outerRadius="100%"
+                  data={healthData}
+                  startAngle={90}
+                  endAngle={-270}
+                  barSize={8}
+                >
+                  <RadialBar
+                    dataKey="value"
+                    cornerRadius={4}
+                    background={{ fill: "hsl(220 15% 14%)" }}
+                  />
+                </RadialBarChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="font-mono text-[22px] font-bold tabular-nums text-warning sm:text-[26px] md:text-[28px]">
                   41
                 </span>
-                <span className="font-mono text-[13px] text-text-muted">
+                <span className="font-mono text-[11px] tabular-nums text-text-muted sm:text-[13px]">
                   / 100
                 </span>
-                <span className="font-syne font-semibold text-xs text-warning tracking-wider mt-1">
+                <span className="font-syne font-semibold text-[10px] text-warning tracking-wider mt-1 sm:text-xs">
                   C
                 </span>
               </div>
@@ -133,23 +133,19 @@ export default function DashboardSection() {
 
           {/* Fee cell */}
           <div>
-            <p className="font-syne text-xs text-text-muted tracking-[2px] uppercase">
-              ANNUAL FEE DRAIN
-            </p>
-            <p className="font-mono font-semibold text-[24px] text-negative mt-1">
+            <p className="section-label">Annual fee drain</p>
+            <p className="mt-1 font-mono text-[24px] font-semibold tabular-nums text-negative">
               ₹40,697
             </p>
             <p className="font-syne text-[12px] text-text-muted">
-              1.82% of portfolio
+              <span className="font-mono-dm tabular-nums">1.82%</span> of portfolio
             </p>
           </div>
 
           {/* Overlap cell */}
           <div>
-            <p className="font-syne text-xs text-text-muted tracking-[2px] uppercase">
-              PORTFOLIO OVERLAP
-            </p>
-            <p className="font-mono font-semibold text-[24px] text-warning mt-1">
+            <p className="section-label">Portfolio overlap</p>
+            <p className="mt-1 font-mono text-[24px] font-semibold tabular-nums text-warning">
               45.2%
             </p>
             <p className="font-syne text-[12px] text-text-muted">

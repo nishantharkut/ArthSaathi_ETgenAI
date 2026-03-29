@@ -67,8 +67,8 @@ export function HealthScore({ data }: HealthScoreProps) {
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Score */}
         <div className="flex flex-col items-center lg:w-[35%]">
-          <div className="relative">
-            <svg width="140" height="140" viewBox="0 0 140 140">
+          <div className="relative w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] lg:w-[160px] lg:h-[160px]">
+            <svg className="h-full w-full" viewBox="0 0 140 140">
               <circle
                 cx="70"
                 cy="70"
@@ -92,7 +92,7 @@ export function HealthScore({ data }: HealthScoreProps) {
               />
             </svg>
             <span
-              className="absolute inset-0 flex items-center justify-center font-mono-dm text-6xl font-bold"
+              className="absolute inset-0 flex items-center justify-center font-mono-dm text-6xl font-bold tabular-nums"
               style={{ color: gradeLetterColor(data.grade) }}
             >
               {visible ? data.score : 0}
@@ -130,7 +130,7 @@ export function HealthScore({ data }: HealthScoreProps) {
                     {dimensionNames[key]}
                   </span>
                   <span
-                    className="font-mono-dm text-sm"
+                    className="font-mono-dm text-sm tabular-nums"
                     style={{ color: "hsl(var(--text-secondary))" }}
                   >
                     {dim.score} / {dim.max}

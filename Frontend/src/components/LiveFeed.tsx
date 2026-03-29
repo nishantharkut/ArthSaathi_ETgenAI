@@ -56,7 +56,7 @@ export default function LiveFeed() {
         <p className="font-syne font-medium text-[8px] text-text-muted uppercase tracking-[2px] mb-1">
           LIVE ANALYSIS
         </p>
-        <p className="font-mono text-xs text-text-secondary">
+        <p className="font-mono text-xs tabular-nums text-text-secondary">
           {entry.split(/(₹[\d,]+\/yr|Score \d+)/g).map((part, i) =>
             /₹|Score/.test(part) ? (
               <span key={i} className="text-negative">

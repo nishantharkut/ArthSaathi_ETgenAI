@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useCountUp } from "@/hooks/useCountUp";
 import { compactINR, formatINR } from "@/lib/format";
@@ -15,6 +16,18 @@ interface SummaryCardsProps {
   annualDrag: number;
   projected10yr: number;
 }
+
+type CardDef = {
+  label: string;
+  value: string;
+  valueColor?: string;
+  icon?: ReactNode;
+  sub1?: ReactNode;
+  sub1Color?: string;
+  sub2?: string;
+  sub2Color?: string;
+  pills?: boolean;
+};
 
 export function SummaryCards({
   summary,
@@ -42,19 +55,32 @@ export function SummaryCards({
         ? "hsl(var(--positive))"
         : "hsl(var(--negative))";
 
-  const cards = [
+  const cards: CardDef[] = [
     {
       label: "TOTAL VALUE",
       value: compactINR(totalVal),
-      sub1: `Invested ${compactINR(summary.total_invested)}`,
+      sub1: (
+        <>
+          Invested{" "}
+          <span className="font-mono-dm tabular-nums">
+            {compactINR(summary.total_invested)}
+          </span>
+        </>
+      ),
       sub2: `${gainSign}${compactINR(gain)} (${pctSign}${gainPct}%)`,
       sub2Color,
     },
     {
       label: "PORTFOLIO XIRR",
       value: xirrVal.toFixed(2) + "%",
-      valueColor: "hsl(var(--positive))",
-      icon: <TrendingUp size={16} style={{ color: "hsl(var(--positive))" }} />,
+      valueColor:
+        xirr.rate >= 0 ? "hsl(var(--positive))" : "hsl(var(--negative))",
+      icon:
+        xirr.rate >= 0 ? (
+          <TrendingUp size={16} style={{ color: "hsl(var(--positive))" }} />
+        ) : (
+          <TrendingDown size={16} style={{ color: "hsl(var(--negative))" }} />
+        ),
       sub1: "Annualized since Jan 2020",
     },
     {
@@ -69,7 +95,14 @@ export function SummaryCards({
       icon: (
         <TrendingDown size={16} style={{ color: "hsl(var(--negative))" }} />
       ),
-      sub1: `${compactINR(projected10yr)} projected over 10 years`,
+      sub1: (
+        <>
+          <span className="font-mono-dm tabular-nums">
+            {compactINR(projected10yr)}
+          </span>{" "}
+          projected over 10 years
+        </>
+      ),
       sub1Color: "hsl(var(--negative))",
     },
   ];
@@ -77,7 +110,7 @@ export function SummaryCards({
   return (
     <div
       ref={ref}
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"
     >
       {cards.map((card, i) => (
         <div
@@ -89,19 +122,19 @@ export function SummaryCards({
             transitionDelay: `${i * 100}ms`,
           }}
         >
-          <p className="section-label text-xs">{card.label}</p>
+          <p className="section-label">{card.label}</p>
           <div className="flex items-center gap-2 mt-2">
             {card.icon}
             <span
-              className="font-mono-dm text-[32px] font-medium"
+              className="font-mono text-[32px] font-medium tabular-nums"
               style={{ color: card.valueColor || "hsl(var(--text-primary))" }}
             >
               {card.value}
             </span>
           </div>
-          {card.sub1 && (
+          {card.sub1 != null && (
             <p
-              className="font-body text-[13px] mt-1"
+              className="font-body mt-1 text-[13px]"
               style={{ color: card.sub1Color || "hsl(var(--text-secondary))" }}
             >
               {card.sub1}
@@ -109,18 +142,23 @@ export function SummaryCards({
           )}
           {card.sub2 && (
             <p
-              className="font-mono-dm text-[13px] mt-0.5"
-              style={{ color: card.sub2Color }}
+              className="font-mono mt-0.5 text-[13px] tabular-nums"
+              style={{
+                color:
+                  card.sub2Color ??
+                  sub2Color ??
+                  "hsl(var(--text-secondary))",
+              }}
             >
               {card.sub2}
             </p>
           )}
           {card.pills && (
             <div className="flex gap-2 mt-2">
-              <span className="pill-regular text-xs font-medium font-body px-2 py-0.5 rounded">
+              <span className="pill-regular rounded px-2 py-0.5 font-mono-dm text-xs font-medium tabular-nums">
                 {summary.regular_plan_count} Regular
               </span>
-              <span className="pill-direct text-xs font-medium font-body px-2 py-0.5 rounded">
+              <span className="pill-direct rounded px-2 py-0.5 font-mono-dm text-xs font-medium tabular-nums">
                 {summary.direct_plan_count} Direct
               </span>
             </div>

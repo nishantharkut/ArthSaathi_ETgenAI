@@ -27,14 +27,41 @@ interface TaxRegimeCompareProps {
   data: AnalysisData;
 }
 
-const inputClass =
-  "bg-[hsl(var(--bg-tertiary))] border-white/10 font-mono-dm text-sm";
-
 /** Strips ₹, spaces, commas, etc. so pasted values still parse. */
 function parseAmountField(raw: string): number {
   const digits = raw.replace(/\D/g, "");
   const n = Number(digits);
   return Number.isFinite(n) ? n : 0;
+}
+
+function InrField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="font-syne block space-y-1 text-xs">
+      <span className="text-text-tertiary">{label}</span>
+      <div className="relative">
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-text-muted">
+          ₹
+        </span>
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          inputMode="numeric"
+          className="h-10 w-full rounded-lg border border-white/[0.08] bg-[hsl(220_20%_12%)] pl-7 pr-3 font-mono text-sm text-text-primary outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent/20"
+        />
+      </div>
+    </label>
+  );
 }
 
 export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
@@ -47,6 +74,9 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
   const [s80d, setS80d] = useState("25000");
   const [ccd1b, setCcd1b] = useState("50000");
   const [homeLoan, setHomeLoan] = useState("0");
+  const [ltaAnnual, setLtaAnnual] = useState("0");
+  const [eduLoan80e, setEduLoan80e] = useState("0");
+  const [otherOldDed, setOtherOldDed] = useState("0");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<TaxRegimeCompareResponse | null>(null);
@@ -67,6 +97,9 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
         section_80ccd1b: parseAmountField(ccd1b),
         home_loan_interest: parseAmountField(homeLoan),
         elss_from_portfolio: elss,
+        lta_exemption_annual: parseAmountField(ltaAnnual),
+        education_loan_interest_80e: parseAmountField(eduLoan80e),
+        other_old_regime_deductions: parseAmountField(otherOldDed),
       };
       const token = await getAccessToken();
       if (!token) {
@@ -131,42 +164,38 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
           <div className="space-y-6">
             {elss > 0 ? (
               <p className="font-syne text-xs text-text-secondary">
-                ELSS in portfolio (toward 80C cap): ₹{(elss / 100000).toFixed(2)}L auto-included
+                ELSS in portfolio (toward 80C cap):{" "}
+                <span className="font-mono-dm tabular-nums">₹{(elss / 100000).toFixed(2)}L</span>{" "}
+                auto-included
               </p>
             ) : null}
 
             <div className="space-y-3 border-b border-white/[0.06] pb-6">
-              <p className="section-label">Income</p>
-              <label className="font-syne block space-y-1 text-xs">
-                <span className="text-text-tertiary">Annual gross salary</span>
-                <Input
-                  value={grossSalary}
-                  onChange={(e) => setGrossSalary(e.target.value)}
-                  placeholder="₹18,00,000"
-                  inputMode="numeric"
-                  className={inputClass}
-                />
-              </label>
-              <label className="font-syne block space-y-1 text-xs">
-                <span className="text-text-tertiary">HRA received (annual)</span>
-                <Input
-                  value={hraAnnual}
-                  onChange={(e) => setHraAnnual(e.target.value)}
-                  placeholder="₹2,40,000"
-                  inputMode="numeric"
-                  className={inputClass}
-                />
-              </label>
-              <label className="font-syne block space-y-1 text-xs">
-                <span className="text-text-tertiary">Rent paid (annual)</span>
-                <Input
-                  value={rentAnnual}
-                  onChange={(e) => setRentAnnual(e.target.value)}
-                  placeholder="₹3,00,000"
-                  inputMode="numeric"
-                  className={inputClass}
-                />
-              </label>
+              <p className="section-label mb-2 mt-4">Income</p>
+              <InrField
+                label="Annual gross salary"
+                value={grossSalary}
+                onChange={setGrossSalary}
+                placeholder="18,00,000"
+              />
+              <InrField
+                label="HRA received (annual)"
+                value={hraAnnual}
+                onChange={setHraAnnual}
+                placeholder="2,40,000"
+              />
+              <InrField
+                label="Rent paid (annual)"
+                value={rentAnnual}
+                onChange={setRentAnnual}
+                placeholder="3,00,000"
+              />
+              <InrField
+                label="LTA exemption (annual, old regime)"
+                value={ltaAnnual}
+                onChange={setLtaAnnual}
+                placeholder="0"
+              />
               <div className="flex items-center gap-2 pt-1">
                 <Switch checked={isMetro} onCheckedChange={setIsMetro} id="metro" />
                 <label htmlFor="metro" className="font-syne text-xs text-text-secondary">
@@ -176,51 +205,37 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
             </div>
 
             <div className="space-y-3 border-b border-white/[0.06] pb-6">
-              <p className="section-label">Deductions</p>
-              <label className="font-syne block space-y-1 text-xs">
-                <span className="text-text-tertiary">80C excl. ELSS (ELSS from CAS added)</span>
-                <Input
-                  value={s80c}
-                  onChange={(e) => setS80c(e.target.value)}
-                  placeholder="₹1,50,000"
-                  inputMode="numeric"
-                  className={inputClass}
-                />
-              </label>
-              <label className="font-syne block space-y-1 text-xs">
-                <span className="text-text-tertiary">80D (medical)</span>
-                <Input
-                  value={s80d}
-                  onChange={(e) => setS80d(e.target.value)}
-                  placeholder="₹25,000"
-                  inputMode="numeric"
-                  className={inputClass}
-                />
-              </label>
-              <label className="font-syne block space-y-1 text-xs">
-                <span className="text-text-tertiary">80CCD(1B) NPS</span>
-                <Input
-                  value={ccd1b}
-                  onChange={(e) => setCcd1b(e.target.value)}
-                  placeholder="₹50,000"
-                  inputMode="numeric"
-                  className={inputClass}
-                />
-              </label>
+              <p className="section-label mb-2 mt-6">Deductions</p>
+              <InrField
+                label="80C excl. ELSS (ELSS from CAS added)"
+                value={s80c}
+                onChange={setS80c}
+                placeholder="1,50,000"
+              />
+              <InrField label="80D (medical)" value={s80d} onChange={setS80d} placeholder="25,000" />
+              <InrField label="80CCD(1B) NPS" value={ccd1b} onChange={setCcd1b} placeholder="50,000" />
             </div>
 
             <div className="space-y-3">
-              <p className="section-label">Home</p>
-              <label className="font-syne block space-y-1 text-xs">
-                <span className="text-text-tertiary">Home loan interest (24(b))</span>
-                <Input
-                  value={homeLoan}
-                  onChange={(e) => setHomeLoan(e.target.value)}
-                  placeholder="₹0"
-                  inputMode="numeric"
-                  className={inputClass}
-                />
-              </label>
+              <p className="section-label mb-2 mt-6">Home & Other</p>
+              <InrField
+                label="Home loan interest (24(b))"
+                value={homeLoan}
+                onChange={setHomeLoan}
+                placeholder="0"
+              />
+              <InrField
+                label="Education loan interest (80E, old regime)"
+                value={eduLoan80e}
+                onChange={setEduLoan80e}
+                placeholder="0"
+              />
+              <InrField
+                label="Other old-regime deductions (capped)"
+                value={otherOldDed}
+                onChange={setOtherOldDed}
+                placeholder="0"
+              />
             </div>
 
             <Button type="button" onClick={() => void compare()} disabled={loading}>
@@ -234,16 +249,28 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
               <>
                 <div className="rounded-lg px-4 py-3" style={recBannerStyle}>
                   <span className="font-syne text-sm font-medium" style={{ color: recTextColor }}>
-                    Lower tax: {recNew ? "New regime" : "Old regime"} · Save {result.savings_display}
+                    Lower tax: {recNew ? "New regime" : "Old regime"} · Save{" "}
+                    <span className="font-mono-dm tabular-nums">{result.savings_display}</span>
                   </span>
                 </div>
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                      <XAxis dataKey="name" tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 11 }} />
+                      <XAxis
+                        dataKey="name"
+                        tick={{
+                          fill: "hsl(var(--text-secondary))",
+                          fontSize: 11,
+                          fontFamily: "DM Mono, ui-monospace, monospace",
+                        }}
+                      />
                       <YAxis
-                        tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 10 }}
+                        tick={{
+                          fill: "hsl(var(--text-secondary))",
+                          fontSize: 10,
+                          fontFamily: "DM Mono, ui-monospace, monospace",
+                        }}
                         tickFormatter={(v) => `₹${(Number(v) / 100000).toFixed(1)}L`}
                       />
                       <Tooltip

@@ -49,16 +49,33 @@ export function EmergencyFundCheck({ funds, monthlyExpenseBasisIncome }: Emergen
             />
           </div>
         </div>
-        <span className="font-mono-dm text-sm shrink-0">{months.toFixed(1)} months covered</span>
+        <span className="font-mono-dm shrink-0 text-sm tabular-nums">
+          {months.toFixed(1)} months covered
+        </span>
       </div>
-      <p className="font-body text-xs mt-2" style={{ color: 'hsl(var(--text-secondary))' }}>
-        {coverage >= 1
-          ? `Your liquid/debt funds (₹${(liquidValue / 100000).toFixed(1)}L) cover 6+ months of expenses.`
-          : `You need ₹${(Math.max(0, target - liquidValue) / 100000).toFixed(1)}L more in liquid funds to cover 6 months.`}
+      <p className="font-body mt-2 text-xs" style={{ color: "hsl(var(--text-secondary))" }}>
+        {coverage >= 1 ? (
+          <>
+            Your liquid/debt funds (
+            <span className="font-mono-dm tabular-nums">
+              ₹{(liquidValue / 100000).toFixed(1)}L
+            </span>
+            ) cover 6+ months of expenses.
+          </>
+        ) : (
+          <>
+            You need{" "}
+            <span className="font-mono-dm tabular-nums">
+              ₹{(Math.max(0, target - liquidValue) / 100000).toFixed(1)}L
+            </span>{" "}
+            more in liquid funds to cover 6 months.
+          </>
+        )}
       </p>
       {usingDefaultMonthlyExpenses ? (
-        <p className="font-body text-xs mt-2" style={{ color: 'hsl(var(--text-tertiary))' }}>
-          Based on estimated monthly expenses of ₹50,000 (default assumption).
+        <p className="font-body mt-2 text-xs" style={{ color: "hsl(var(--text-tertiary))" }}>
+          Based on estimated monthly expenses of{" "}
+          <span className="font-mono-dm tabular-nums">₹50,000</span> (default assumption).
         </p>
       ) : null}
     </div>
