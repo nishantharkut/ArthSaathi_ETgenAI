@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { Calculator, ChevronDown, ChevronUp } from "lucide-react";
 import { api } from "@/lib/api";
+import { getAccessToken } from "@/lib/auth";
 import type { AnalysisData, TaxRegimeCompareResponse } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,11 +68,21 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
         home_loan_interest: parseAmountField(homeLoan),
         elss_from_portfolio: elss,
       };
+      const token = await getAccessToken();
+      if (!token) {
+        throw new Error("Session expired. Please log in again.");
+      }
       const res = await fetch(api.taxRegimeCompare, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(body),
       });
+      if (res.status === 401) {
+        throw new Error("Session expired. Please log in again.");
+      }
       if (!res.ok) throw new Error(await res.text());
       setResult((await res.json()) as TaxRegimeCompareResponse);
     } catch (e) {

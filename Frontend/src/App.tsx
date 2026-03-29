@@ -11,6 +11,7 @@ import { AnalysisProvider } from "@/context/analysis-context";
 import { SessionProvider } from "@/context/session-context";
 import { AppLayout } from "@/components/AppLayout";
 import { AuthGuard } from "@/components/AuthGuard";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -44,14 +45,17 @@ const App = () => {
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
-    /** Keep ScrollTrigger (e.g. pinned sections) in sync with Lenis — avoids DOM/reconcile crashes on route change. */
+
+    // Keep ScrollTrigger in sync with Lenis-driven scroll updates.
     const handleLenisScroll = () => {
       ScrollTrigger.update();
     };
+
     lenis.on("scroll", handleLenisScroll);
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
+
     return () => {
       lenis.off("scroll", handleLenisScroll);
       lenis.destroy();
@@ -72,105 +76,107 @@ const App = () => {
                 v7_relativeSplatPath: true,
               }}
             >
-            <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
+              <AppErrorBoundary>
+                <ScrollToTop />
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
 
-              <Route
-                path="/dashboard"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <Dashboard />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeUpload />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze/processing"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeProcessing />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze/report"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeReport />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze/error"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeError />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/tax"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <TaxWizard />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/fire"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <FirePlanner />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/mentor"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <MentorPage />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/demo"
-                element={
-                  <AppLayout>
-                    <Demo />
-                  </AppLayout>
-                }
-              />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <Dashboard />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeUpload />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze/processing"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeProcessing />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze/report"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeReport />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze/error"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeError />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/tax"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <TaxWizard />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/fire"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <FirePlanner />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/mentor"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <MentorPage />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/demo"
+                    element={
+                      <AppLayout>
+                        <Demo />
+                      </AppLayout>
+                    }
+                  />
 
-              <Route path="/app" element={<Navigate to="/dashboard" replace />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                  <Route path="/app" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AppErrorBoundary>
             </BrowserRouter>
           </TooltipProvider>
         </AnalysisProvider>
