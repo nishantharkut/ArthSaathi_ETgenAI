@@ -139,7 +139,7 @@ export default function ProblemSection() {
             </div>
           </div>
 
-          <div className="problem-panel w-screen h-full flex items-start relative pt-12 md:pt-14">
+          <div className="problem-panel flex h-full w-[calc(200vw/3)] flex-shrink-0 items-start relative pt-12 md:pt-14">
             <div className="mx-auto w-full max-w-6xl px-6 md:px-10 flex justify-center">
               <div className="text-center">
               <p className="section-label mb-6">Finding 02</p>

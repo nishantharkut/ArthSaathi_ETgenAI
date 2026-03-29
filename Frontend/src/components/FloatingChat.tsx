@@ -4,6 +4,7 @@ import { Maximize2, MessageCircle, Minus, X } from "lucide-react";
 import { MentorChat } from "@/components/ArthSaathi/MentorChat";
 import { useAnalysis } from "@/context/analysis-context";
 import { useSession } from "@/context/session-context";
+import { mockData } from "@/data/mockData";
 
 type WidgetState = "collapsed" | "expanded" | "hidden";
 
@@ -17,6 +18,10 @@ export function FloatingChat() {
 
   const guestChatLocked =
     location.pathname === "/demo" && (sessionLoading || !session);
+
+  /** Demo report uses mockData in UI; context has no result — align chat API context with the same payload. */
+  const analysisForChat =
+    location.pathname === "/demo" ? mockData : (state.result ?? null);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -109,7 +114,7 @@ export function FloatingChat() {
 
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <MentorChat
-              analysis={state.result ?? null}
+              analysis={analysisForChat}
               guestChatLocked={guestChatLocked}
               layout="column"
             />

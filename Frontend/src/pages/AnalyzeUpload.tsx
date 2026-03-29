@@ -13,7 +13,7 @@ export default function AnalyzeUpload() {
   return (
     <div className="bg-primary-dark">
       {reportHint ? (
-        <div className="-mt-1 mb-3 max-w-[1120px]">
+        <div className="-mt-1 mb-3 mx-auto w-full max-w-[1120px]">
           <div
             className="rounded-md px-4 py-3 font-body text-sm"
             style={{
