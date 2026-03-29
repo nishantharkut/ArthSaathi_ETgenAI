@@ -107,7 +107,7 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 left-0 right-0 h-[52px] z-[100] flex items-center justify-between px-6 md:px-10"
+      className="fixed top-0 left-0 right-0 z-[100] flex h-[52px] items-center px-6 md:px-10"
       style={{
         background: "transparent",
         borderBottom: "1px solid transparent",
@@ -115,7 +115,7 @@ export default function Navbar() {
     >
       <span
         ref={wordmarkRef}
-        className="font-fraunces text-text-primary text-sm cursor-pointer"
+        className="relative z-10 font-fraunces text-text-primary text-sm cursor-pointer"
         style={{ fontVariationSettings: "'opsz' 72, 'wght' 700" }}
         onClick={onWordmarkActivate}
         role="button"
@@ -130,7 +130,10 @@ export default function Navbar() {
         ArthSaathi
       </span>
 
-      <span ref={centerRef} className="hidden md:flex items-center gap-6">
+      <span
+        ref={centerRef}
+        className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex md:items-center md:gap-6"
+      >
         <a
           href="#problem"
           className="font-syne text-[13px] text-text-muted hover:text-text-secondary transition-colors no-underline"
@@ -157,7 +160,7 @@ export default function Navbar() {
         </a>
       </span>
 
-      <div className="flex items-center gap-2">
+      <div className="relative z-10 ml-auto flex items-center gap-2">
         <div className="hidden md:flex items-center gap-2">
           {!loggedIn ? (
             <Link
