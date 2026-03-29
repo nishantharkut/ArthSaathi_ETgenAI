@@ -108,9 +108,10 @@ export function MentorChat({
         Accept: "text/event-stream",
       };
       const token = await getAccessToken();
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
+      if (!token) {
+        throw new Error("Session expired. Please log in again.");
       }
+      headers.Authorization = `Bearer ${token}`;
 
       try {
         await fetchEventSource(api.chat, {
@@ -123,6 +124,9 @@ export function MentorChat({
           }),
           async onopen(res) {
             if (!res.ok) {
+              if (res.status === 401) {
+                throw new Error("Session expired. Please log in again.");
+              }
               const t = await res.text();
               throw new Error(t || `Chat failed (${res.status})`);
             }

@@ -14,6 +14,7 @@ Endpoints:
 """
 import asyncio
 import json
+import logging
 import os
 import time
 from typing import AsyncGenerator, Literal
@@ -39,6 +40,8 @@ from app.tax_insights import compute_tax_insights
 from app.tax_regime import compare_regimes
 from app.agents.overlap import _load_holdings   # for health endpoint
 
+logger = logging.getLogger(__name__)
+
 # ---------------------------------------------------------------------------
 # App setup
 # ---------------------------------------------------------------------------
@@ -56,6 +59,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Check and log auth configuration
+auth_config_msg = settings.validate_auth_config()
+if auth_config_msg:
+    logger.warning(auth_config_msg)
 
 # LLM provider name for health endpoint
 def _llm_provider() -> str:
@@ -77,18 +85,74 @@ def root():
     return {"message": "ArthSaathi Backend Running 🚀", "version": settings.APP_VERSION}
 
 
+@app.get("/api/auth/debug")
+def auth_debug(authorization: str = Header(default=None)):
+    """Debug endpoint to show token validation info. Remove in production."""
+    debug_info = {
+        "has_auth_header": bool(authorization),
+        "header_format_ok": bool(authorization and authorization.lower().startswith("bearer ")),
+        "supabase_config": {
+            "url_configured": bool(settings.SUPABASE_URL),
+            "jwt_secret_configured": bool(settings.SUPABASE_JWT_SECRET),
+            "anon_key_configured": bool(settings.SUPABASE_ANON_KEY),
+        },
+    }
+    
+    if authorization and authorization.lower().startswith("bearer "):
+        token = authorization.split(" ", 1)[1]
+        debug_info["token"] = {
+            "length": len(token),
+            "is_jwt": token.count(".") == 2,
+            "first_50": token[:50] + "..." if len(token) > 50 else token,
+        }
+        
+        # Try to decode
+        if token.count(".") == 2:
+            try:
+                import jwt as pyjwt
+                header = pyjwt.get_unverified_header(token)
+                payload = pyjwt.decode(token, options={"verify_signature": False})
+                debug_info["token"]["header"] = header
+                debug_info["token"]["payload"] = {k: v for k, v in payload.items() if k not in ["email_verified"]}
+            except Exception as e:
+                debug_info["token"]["decode_error"] = str(e)
+    
+    return JSONResponse(content=debug_info)
+
+
 # ---------------------------------------------------------------------------
 # Auth (new feature)
 # ---------------------------------------------------------------------------
 
 
 def get_current_user(authorization: str = Header(default=None)):
-    if not authorization or not authorization.startswith("Bearer "):
+    if not authorization or not authorization.lower().startswith("bearer "):
+        logger.debug("Auth: No Authorization header or invalid format")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
     token = authorization.split(" ", 1)[1]
-    user = get_user_from_token(token) or get_user_from_supabase_jwt(token)
-    if not user:
+    logger.debug(f"Auth: Processing token (length={len(token)}, is_jwt={'.' in token and token.count('.') == 2})")
+    
+    try:
+        # Try local token first (from register/login endpoints)
+        user = get_user_from_token(token)
+        if user:
+            logger.debug(f"Auth: Validated as local token for user {user.get('username')}")
+            return user
+        
+        logger.debug("Auth: Local token not found, attempting Supabase JWT validation...")
+        # Fallback to Supabase JWT (Google OAuth, etc.)
+        user = get_user_from_supabase_jwt(token)
+        if user:
+            logger.debug(f"Auth: Validated as Supabase JWT for user {user.get('username')}")
+            return user
+        
+        logger.warning("Auth: Token validation failed - no user found")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception(f"Auth: Token verification crashed: {exc}")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
     return user
@@ -512,6 +576,10 @@ async def analyze(
                 # Check for exception
                 exc = pipeline_task.exception()
                 if exc:
+                    logger.error(
+                        "Analyze pipeline failed",
+                        exc_info=(type(exc), exc, exc.__traceback__),
+                    )
                     error = exc
                 else:
                     result = pipeline_task.result()

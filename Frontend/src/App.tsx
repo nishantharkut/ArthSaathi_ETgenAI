@@ -11,6 +11,7 @@ import { AnalysisProvider } from "@/context/analysis-context";
 import { SessionProvider } from "@/context/session-context";
 import { AppLayout } from "@/components/AppLayout";
 import { AuthGuard } from "@/components/AuthGuard";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -45,14 +46,17 @@ const App = () => {
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
-    /** Keep ScrollTrigger (e.g. pinned sections) in sync with Lenis — avoids DOM/reconcile crashes on route change. */
+
+    // Keep ScrollTrigger in sync with Lenis-driven scroll updates.
     const handleLenisScroll = () => {
       ScrollTrigger.update();
     };
+
     lenis.on("scroll", handleLenisScroll);
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
+
     return () => {
       lenis.off("scroll", handleLenisScroll);
       lenis.destroy();
@@ -74,8 +78,9 @@ const App = () => {
                   v7_relativeSplatPath: true,
                 }}
               >
-                <ScrollToTop />
-                <Routes>
+                <AppErrorBoundary>
+                  <ScrollToTop />
+                  <Routes>
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
@@ -172,7 +177,8 @@ const App = () => {
 
                   <Route path="/app" element={<Navigate to="/dashboard" replace />} />
                   <Route path="*" element={<NotFound />} />
-                </Routes>
+                  </Routes>
+                </AppErrorBoundary>
               </BrowserRouter>
             </TooltipProvider>
           </AnalysisProvider>
