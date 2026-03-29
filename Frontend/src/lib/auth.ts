@@ -41,7 +41,9 @@ function isJwtExpired(token: string): boolean {
   const parts = token.split(".");
   if (parts.length !== 3) return false; // Opaque tokens: cannot decode expiry here.
   try {
-    const payload = JSON.parse(atob(parts[1])) as { exp?: number };
+    const base64url = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64url + "=".repeat((4 - (base64url.length % 4)) % 4);
+    const payload = JSON.parse(atob(padded)) as { exp?: number };
     if (!payload.exp) return false;
     const now = Math.floor(Date.now() / 1000);
     return payload.exp <= now;

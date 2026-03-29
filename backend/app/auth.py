@@ -153,24 +153,19 @@ def _decode_supabase_hs256(token: str, secret: str) -> Optional[Dict[str, Any]]:
 
 
 def _is_allowed_supabase_issuer(issuer: str) -> bool:
-    """Allow trusted Supabase Auth issuers when SUPABASE_URL is not explicitly configured."""
-    try:
-        parsed = urlparse(issuer)
-    except Exception:
+    """Allow only the configured Supabase project issuer."""
+    configured_base = (settings.SUPABASE_URL or "").strip().rstrip("/")
+    if not configured_base:
         return False
-    if parsed.scheme != "https":
-        return False
-    if not parsed.netloc:
-        return False
-    if not parsed.path.rstrip("/").endswith("/auth/v1"):
-        return False
-    host = parsed.hostname or ""
-    return host.endswith(".supabase.co")
+    expected_iss = f"{configured_base}/auth/v1"
+    return issuer.rstrip("/") == expected_iss
 
 
 def _decode_supabase_es256(token: str) -> Optional[Dict[str, Any]]:
-    """ECC (P-256) project JWTs — validates against configured SUPABASE_URL or trusted issuer."""
+    """ECC (P-256) project JWTs — validates against configured SUPABASE_URL."""
     configured_base = (settings.SUPABASE_URL or "").strip().rstrip("/")
+    if not configured_base:
+        return None
     import jwt as pyjwt
     from jwt import PyJWTError, PyJWKClient
 
@@ -179,11 +174,7 @@ def _decode_supabase_es256(token: str) -> Optional[Dict[str, Any]]:
     except PyJWTError:
         return None
     iss = (unverified.get("iss") or "").rstrip("/")
-    if configured_base:
-        expected_iss = f"{configured_base}/auth/v1"
-        if iss != expected_iss:
-            return None
-    elif not _is_allowed_supabase_issuer(iss):
+    if not _is_allowed_supabase_issuer(iss):
         return None
     jwks_url = f"{iss}/.well-known/jwks.json"
     try:
@@ -218,19 +209,7 @@ def _fetch_supabase_user(token: str) -> Optional[Dict[str, Any]]:
     base = (settings.SUPABASE_URL or "").strip().rstrip("/")
     anon_key = (settings.SUPABASE_ANON_KEY or "").strip()
 
-    # If SUPABASE_URL is missing, try deriving it from the JWT issuer.
-    if not base:
-        try:
-            import jwt as pyjwt
-
-            unverified = pyjwt.decode(token, options={"verify_signature": False})
-            iss = (unverified.get("iss") or "").rstrip("/")
-            if iss.endswith("/auth/v1"):
-                base = iss[: -len("/auth/v1")]
-        except Exception:
-            return None
-
-    if not base:
+    if not base or not anon_key:
         return None
 
     try:
@@ -285,14 +264,14 @@ def get_user_from_supabase_jwt(token: str) -> Optional[Dict[str, Any]]:
         return None
 
     # Some auth providers may issue opaque tokens. If token is not JWT-like,
-    # skip local decoding and validate directly via Supabase Auth API.
+    # validate via Supabase Auth API when configured.
     if token.count(".") != 2:
         return _fetch_supabase_user(token)
 
     try:
         header = pyjwt.get_unverified_header(token)
     except PyJWTError:
-        return _fetch_supabase_user(token)
+        return None
 
     try:
         alg = header.get("alg")
@@ -310,7 +289,7 @@ def get_user_from_supabase_jwt(token: str) -> Optional[Dict[str, Any]]:
                 payload = _decode_supabase_es256(token)
 
         if not payload:
-            return _fetch_supabase_user(token)
+            return None
         if payload.get("role") == "service_role":
             return None
         return _claims_to_user(payload)

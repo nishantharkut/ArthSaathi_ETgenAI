@@ -25,7 +25,7 @@ export default function Footer() {
               border: "1px solid hsl(220 10% 14%)",
             }}
           >
-            <p className="font-syne text-[11px] text-text-muted leading-relaxed">
+            <p className="font-syne text-xs text-text-muted leading-relaxed">
               Mutual fund investments are subject to market risk. This tool
               provides analysis for informational purposes only and does not
               constitute investment advice. Past performance is not indicative

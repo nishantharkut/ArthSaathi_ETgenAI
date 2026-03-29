@@ -1,7 +1,9 @@
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { isEquityForOverlap } from "@/lib/equityCategory";
 import { shortFundName } from "@/lib/format";
 import type { AnalysisData } from "@/types/analysis";
+import { NoDataCard } from "@/components/ArthSaathi/NoDataCard";
 
 interface OverlapMatrixProps {
   data: AnalysisData["overlap_analysis"];
@@ -19,7 +21,42 @@ function overlapBg(pct: number) {
 export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
   const { ref, visible } = useScrollReveal();
 
-  const equityFunds = funds.filter((f) => f.category.startsWith("Equity"));
+  const equityFunds = useMemo(
+    () => funds.filter((f) => isEquityForOverlap(f.category)),
+    [funds],
+  );
+
+  const sortedPairs = useMemo(() => {
+    if (equityFunds.length < 2) return [];
+    const seen = new Set<string>();
+    const rows: {
+      fund_a_short: string;
+      fund_b_short: string;
+      overlap: number;
+    }[] = [];
+    for (const m of data.matrix) {
+      const a = shortFundName(m.fund_a);
+      const b = shortFundName(m.fund_b);
+      const key = [a, b].sort().join("\0");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const ov = m.overlap ?? 0;
+      if (ov <= 0) continue;
+      rows.push({ fund_a_short: a, fund_b_short: b, overlap: ov });
+    }
+    rows.sort((x, y) => y.overlap - x.overlap);
+    return rows.slice(0, 5);
+  }, [data.matrix, equityFunds.length]);
+
+  if (equityFunds.length < 2) {
+    return (
+      <NoDataCard
+        title="Overlap Analysis"
+        description="Need at least 2 equity funds to compute overlap."
+      />
+    );
+  }
+
   const names = equityFunds.map((f) => shortFundName(f.scheme_name));
 
   const getOverlap = (a: string, b: string): number | null => {
@@ -48,8 +85,35 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
         Fund Overlap Analysis
       </h2>
 
-      {/* Heatmap */}
-      <div className="overflow-x-auto mt-6">
+      {sortedPairs.length > 0 ? (
+        <div className="mt-6 space-y-2 md:hidden">
+          <p className="section-label">Top overlaps</p>
+          {sortedPairs.map((pair, i) => {
+            const o = pair.overlap;
+            const heat = Math.min(1, o / 40);
+            return (
+              <div
+                key={`${pair.fund_a_short}-${pair.fund_b_short}-${i}`}
+                className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.06] px-3 py-2"
+                style={{
+                  background: `rgba(248, 113, 113, ${0.06 + heat * 0.14})`,
+                }}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-syne text-xs text-text-primary">{pair.fund_a_short}</p>
+                  <p className="truncate font-syne text-xs text-text-muted">{pair.fund_b_short}</p>
+                </div>
+                <span className="ml-2 shrink-0 font-mono text-sm text-text-primary">
+                  {o.toFixed(0)}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {/* Heatmap — desktop */}
+      <div className="mt-6 hidden overflow-x-auto md:block">
         <div
           className="inline-grid gap-0.5"
           style={{
@@ -61,7 +125,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
           {names.map((n) => (
             <div
               key={n}
-              className="font-body text-[10px] text-center px-1 py-2 truncate"
+              className="font-body text-xs text-center px-1 py-2 truncate"
               style={{ color: "hsl(var(--text-tertiary))" }}
             >
               {n.split(" ").slice(0, 2).join(" ")}
@@ -71,7 +135,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
           {/* Rows */}
           {names.map((rowName, ri) => (
             <Fragment key={rowName}>
-              <div className="font-body text-[11px] font-medium text-primary-light flex items-center pr-2 truncate">
+              <div className="font-body text-xs font-medium text-primary-light flex items-center pr-2 truncate">
                 {rowName.split(" ").slice(0, 2).join(" ")}
               </div>
               {names.map((colName, ci) => {
@@ -129,7 +193,7 @@ export function OverlapMatrix({ data, funds }: OverlapMatrixProps) {
               </div>
               {stock.warning && (
                 <span
-                  className="text-[10px] font-body font-medium px-2 py-0.5 rounded"
+                  className="text-xs font-body font-medium px-2 py-0.5 rounded"
                   style={{
                     background: "rgba(248,113,113,0.1)",
                     color: "hsl(var(--negative))",

@@ -98,7 +98,7 @@ export default function NumbersSection() {
       }}
     >
       <div className="max-w-[1080px] mx-auto px-6 md:px-10">
-        <p className="font-syne font-medium text-[11px] text-text-muted uppercase tracking-[3px] text-center mb-10">
+        <p className="font-syne font-medium text-xs text-text-muted uppercase tracking-[3px] text-center mb-10">
           BY THE NUMBERS
         </p>
 
@@ -114,7 +114,7 @@ export default function NumbersSection() {
             <p className="font-syne text-[13px] text-text-tertiary mt-2">
               {stats[0].label}
             </p>
-            <p className="font-syne text-[11px] text-text-muted mt-1">
+            <p className="font-syne text-xs text-text-muted mt-1">
               {stats[0].context}
             </p>
           </div>

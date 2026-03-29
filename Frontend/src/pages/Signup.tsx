@@ -28,7 +28,7 @@ export default function Signup() {
     let cancelled = false;
     const check = async () => {
       const token = await getAccessToken();
-      if (!cancelled && token) navigate("/analyze", { replace: true });
+      if (!cancelled && token) navigate("/dashboard", { replace: true });
     };
     void check();
     return () => {
@@ -65,7 +65,7 @@ export default function Signup() {
     try {
       const data = await registerRequest(email, password, name.trim());
       if (data.session) {
-        navigate("/analyze", { replace: true });
+        navigate("/dashboard", { replace: true });
       } else {
         setConfirmEmailHint(true);
       }

@@ -10,7 +10,7 @@ import {
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: string })?.from ?? "/analyze";
+  const from = (location.state as { from?: string })?.from ?? "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +26,7 @@ export default function Login() {
     let cancelled = false;
     const check = async () => {
       const token = await getAccessToken();
-      if (!cancelled && token) navigate("/analyze", { replace: true });
+      if (!cancelled && token) navigate("/dashboard", { replace: true });
     };
     void check();
     return () => {

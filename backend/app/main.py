@@ -513,7 +513,10 @@ async def analyze(
                 # Check for exception
                 exc = pipeline_task.exception()
                 if exc:
-                    logger.exception("Analyze pipeline failed", exc_info=exc)
+                    logger.error(
+                        "Analyze pipeline failed",
+                        exc_info=(type(exc), exc, exc.__traceback__),
+                    )
                     error = exc
                 else:
                     result = pipeline_task.result()

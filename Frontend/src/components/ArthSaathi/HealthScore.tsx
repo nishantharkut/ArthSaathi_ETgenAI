@@ -1,4 +1,5 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { NoDataCard } from "@/components/ArthSaathi/NoDataCard";
 
 interface HealthScoreProps {
   data: {
@@ -16,15 +17,39 @@ const dimensionNames: Record<string, string> = {
   risk_management: "Risk Management",
 };
 
-function gradeColor(score: number, max: number) {
+function dimensionBarColor(score: number, max: number) {
   const pct = score / max;
   if (pct > 0.6) return "hsl(var(--positive))";
   if (pct > 0.3) return "hsl(var(--warning))";
   return "hsl(var(--negative))";
 }
 
+function gradeLetterColor(grade: string): string {
+  switch (grade) {
+    case "A":
+      return "hsl(var(--positive))";
+    case "B":
+      return "hsl(var(--chart-2))";
+    case "C":
+      return "hsl(var(--warning))";
+    case "D":
+    case "F":
+      return "hsl(var(--negative))";
+    default:
+      return "hsl(var(--text-secondary))";
+  }
+}
+
 export function HealthScore({ data }: HealthScoreProps) {
   const { ref, visible } = useScrollReveal();
+  if (!data || data.score == null || Number.isNaN(Number(data.score))) {
+    return (
+      <NoDataCard
+        title="Health Score"
+        description="Health score data is not available."
+      />
+    );
+  }
   const circumference = 2 * Math.PI * 56;
   const offset = circumference - (data.score / 100) * circumference;
 
@@ -57,7 +82,7 @@ export function HealthScore({ data }: HealthScoreProps) {
                 cy="70"
                 r="56"
                 fill="none"
-                stroke="hsl(var(--grade-c))"
+                stroke={gradeLetterColor(data.grade)}
                 strokeWidth="8"
                 strokeLinecap="round"
                 strokeDasharray={circumference}
@@ -68,14 +93,14 @@ export function HealthScore({ data }: HealthScoreProps) {
             </svg>
             <span
               className="absolute inset-0 flex items-center justify-center font-mono-dm text-6xl font-bold"
-              style={{ color: "hsl(var(--grade-c))" }}
+              style={{ color: gradeLetterColor(data.grade) }}
             >
               {visible ? data.score : 0}
             </span>
           </div>
           <p
             className="font-body text-lg font-semibold mt-4"
-            style={{ color: "hsl(var(--grade-c))" }}
+            style={{ color: gradeLetterColor(data.grade) }}
           >
             {data.grade} — {data.label}
           </p>
@@ -119,7 +144,7 @@ export function HealthScore({ data }: HealthScoreProps) {
                     className="h-full rounded-full transition-all duration-800 ease-out"
                     style={{
                       width: visible ? `${pct}%` : "0%",
-                      background: gradeColor(dim.score, dim.max),
+                      background: dimensionBarColor(dim.score, dim.max),
                       transitionDelay: `${400 + i * 150}ms`,
                     }}
                   />

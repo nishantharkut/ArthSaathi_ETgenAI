@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Mic, MicOff, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { api } from "@/lib/api";
@@ -6,6 +7,7 @@ import { getAccessToken } from "@/lib/auth";
 import type { AnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 
@@ -25,9 +27,21 @@ const QUICK_PROMPTS = [
 
 interface MentorChatProps {
   analysis?: AnalysisData | null;
+  /** When true (e.g. public demo, no session), block API calls and prompt sign-in. */
+  guestChatLocked?: boolean;
+  /**
+   * `column` — fill a flex parent with max-height (report sidebar / mobile drawer).
+   * `default` — standalone min/max height for floating widget and demo.
+   */
+  layout?: "default" | "column";
 }
 
-export function MentorChat({ analysis }: MentorChatProps) {
+export function MentorChat({
+  analysis,
+  guestChatLocked = false,
+  layout = "default",
+}: MentorChatProps) {
+  const location = useLocation();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState("");
@@ -48,17 +62,19 @@ export function MentorChat({ analysis }: MentorChatProps) {
     : "no-analysis";
 
   useEffect(() => {
-    const greeting = analysis
-      ? `I've analyzed your portfolio (${analysis.portfolio_summary.total_funds} funds, ₹${(
-          analysis.portfolio_summary.total_current_value / 1e5
-        ).toFixed(
-          2,
-        )} L). Ask anything about fees, overlap, taxes, or goals — I'll use your numbers.`
-      : "Upload a CAS statement to get portfolio-aware answers. For now, ask me general questions about mutual funds, XIRR, or tax optimisation.";
+    const greeting = guestChatLocked
+      ? "Sign in to chat with the AI mentor. The sample report on the left is fully interactive — mentor replies need an account."
+      : analysis
+        ? `I've analyzed your portfolio (${analysis.portfolio_summary.total_funds} funds, ₹${(
+            analysis.portfolio_summary.total_current_value / 1e5
+          ).toFixed(
+            2,
+          )} L). Ask anything about fees, overlap, taxes, or goals — I'll use your numbers.`
+        : "Upload a CAS statement to get portfolio-aware answers. For now, ask me general questions about mutual funds, XIRR, or tax optimisation.";
     setMessages([{ role: "assistant", content: greeting }]);
     setStreaming("");
     setError(null);
-  }, [analysisKey, analysis]);
+  }, [analysisKey, analysis, guestChatLocked]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,7 +89,7 @@ export function MentorChat({ analysis }: MentorChatProps) {
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
-      if (!trimmed || loading) return;
+      if (!trimmed || loading || guestChatLocked) return;
 
       const historyForApi = messages.map((m) => ({
         role: m.role,
@@ -157,13 +173,28 @@ export function MentorChat({ analysis }: MentorChatProps) {
         setLoading(false);
       }
     },
-    [autoSpeak, loading, messages, portfolioContext, speak, ttsSupported],
+    [autoSpeak, guestChatLocked, loading, messages, portfolioContext, speak, ttsSupported],
   );
+
+  const rootStyle =
+    layout === "column"
+      ? ({
+          minHeight: 0,
+          maxHeight: "100%",
+          height: "100%",
+        } as const)
+      : ({
+          minHeight: 420,
+          maxHeight: "min(720px, calc(100vh - 3rem))",
+        } as const);
 
   return (
     <div
-      className="card-arth flex flex-col overflow-hidden border border-white/10"
-      style={{ minHeight: 420, maxHeight: "min(720px, calc(100vh - 3rem))" }}
+      className={cn(
+        "card-arth flex min-h-0 flex-col overflow-hidden border border-white/10",
+        layout === "default" && "min-h-[420px]",
+      )}
+      style={rootStyle}
     >
       <div
         className="flex items-center justify-between gap-2 px-4 py-3 border-b border-white/10"
@@ -175,7 +206,7 @@ export function MentorChat({ analysis }: MentorChatProps) {
             AI Mentor
           </p>
           <p
-            className="font-body text-[11px]"
+            className="font-body text-xs"
             style={{ color: "hsl(var(--text-tertiary))" }}
           >
             Answers use your portfolio context
@@ -232,14 +263,34 @@ export function MentorChat({ analysis }: MentorChatProps) {
         <div ref={bottomRef} />
       </div>
 
+      {guestChatLocked ? (
+        <div
+          className="mx-3 mb-2 rounded-lg px-3 py-2 text-center font-syne text-xs"
+          style={{
+            background: "rgba(74, 144, 217, 0.08)",
+            border: "1px solid rgba(74, 144, 217, 0.12)",
+            color: "hsl(var(--text-secondary))",
+          }}
+        >
+          <Link
+            to="/login"
+            state={{ from: location.pathname }}
+            className="text-accent font-semibold hover:underline"
+          >
+            Sign in
+          </Link>{" "}
+          to enable mentor chat.
+        </div>
+      ) : null}
+
       <div className="px-3 pb-2 flex flex-wrap gap-1.5">
         {QUICK_PROMPTS.map((q) => (
           <button
             key={q}
             type="button"
-            disabled={loading}
+            disabled={loading || guestChatLocked}
             onClick={() => void send(q)}
-            className="font-body text-[11px] px-2 py-1 rounded-full border border-white/10 hover:bg-white/5 transition-colors"
+            className="font-body text-xs px-2 py-1 rounded-full border border-white/10 hover:bg-white/5 transition-colors"
             style={{ color: "hsl(var(--text-secondary))" }}
           >
             {q}
@@ -259,6 +310,7 @@ export function MentorChat({ analysis }: MentorChatProps) {
             type="button"
             size="icon"
             variant="ghost"
+            disabled={guestChatLocked}
             onClick={() => isListening ? stopListening() : startListening()}
             className={`shrink-0 ${isListening ? 'text-red-400 animate-pulse' : ''}`}
             aria-label={isListening ? 'Stop listening' : 'Start listening'}
@@ -271,21 +323,23 @@ export function MentorChat({ analysis }: MentorChatProps) {
           onChange={(e) => {
             if (!isListening) setInput(e.target.value);
           }}
-          placeholder="Ask ArthSaathi anything…"
-          disabled={loading}
+          placeholder={
+            guestChatLocked ? "Sign in to chat…" : "Ask ArthSaathi anything…"
+          }
+          disabled={loading || guestChatLocked}
           className={`font-body text-sm bg-[hsl(var(--bg-tertiary))] border-white/10 ${isListening ? "ring-1 ring-red-400/50 animate-pulse" : ""}`}
         />
         <Button
           type="submit"
           size="icon"
-          disabled={loading || !input.trim()}
+          disabled={guestChatLocked || loading || !input.trim()}
           className="shrink-0"
         >
           <Send className="h-4 w-4" />
         </Button>
       </form>
       <p
-        className="px-3 pb-3 font-body text-[10px]"
+        className="px-3 pb-3 font-body text-xs"
         style={{ color: "hsl(var(--text-tertiary))" }}
       >
         Not SEBI-registered advice. Educational use only.

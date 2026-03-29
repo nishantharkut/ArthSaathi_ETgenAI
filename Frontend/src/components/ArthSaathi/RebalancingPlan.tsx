@@ -94,7 +94,7 @@ export function RebalancingPlan({
           </h2>
           {aiGenerated ? (
             <span
-              className="flex items-center gap-1 text-[11px] font-medium font-body px-2.5 py-1 rounded"
+              className="flex items-center gap-1 text-xs font-medium font-body px-2.5 py-1 rounded"
               style={{
                 background: "rgba(74,144,217,0.15)",
                 color: "hsl(var(--accent))",
@@ -104,7 +104,7 @@ export function RebalancingPlan({
             </span>
           ) : (
             <span
-              className="text-[11px] font-body"
+              className="text-xs font-body"
               style={{ color: "hsl(var(--text-tertiary))" }}
             >
               Generated using rules-based analysis

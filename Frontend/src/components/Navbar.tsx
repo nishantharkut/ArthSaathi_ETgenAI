@@ -86,6 +86,7 @@ export default function Navbar() {
     return () => {
       trigger.kill();
       tl.kill();
+      gsap.killTweensOf(nav);
     };
   }, []);
 
@@ -117,10 +118,10 @@ export default function Navbar() {
 
       <span ref={centerRef} className="hidden md:flex items-center gap-6">
         <Link
-          to="/analyze"
+          to="/dashboard"
           className="font-syne text-[13px] text-text-muted hover:text-text-secondary transition-colors no-underline"
         >
-          X-Ray
+          Dashboard
         </Link>
         <Link
           to="/tax"
@@ -145,7 +146,7 @@ export default function Navbar() {
       <div className="flex items-center gap-2">
         <Link
           ref={btnRef}
-          to={loggedIn ? "/analyze" : "/login"}
+          to={loggedIn ? "/dashboard" : "/login"}
           className="font-syne font-semibold text-[13px] bg-accent text-white h-[34px] px-4 rounded-[7px] transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97] inline-flex items-center justify-center no-underline"
         >
           {loggedIn ? "Open App" : "Sign in"}

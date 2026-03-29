@@ -34,7 +34,10 @@ export default function LiveFeed() {
     const timeout = setTimeout(() => {
       gsap.to(el, { opacity: 0, duration: 0.3 });
     }, 4000);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      gsap.killTweensOf(el);
+    };
   }, [index]);
 
   // Format the entry to color the numbers
@@ -53,7 +56,7 @@ export default function LiveFeed() {
         <p className="font-syne font-medium text-[8px] text-text-muted uppercase tracking-[2px] mb-1">
           LIVE ANALYSIS
         </p>
-        <p className="font-mono text-[10px] text-text-secondary">
+        <p className="font-mono text-xs text-text-secondary">
           {entry.split(/(₹[\d,]+\/yr|Score \d+)/g).map((part, i) =>
             /₹|Score/.test(part) ? (
               <span key={i} className="text-negative">
