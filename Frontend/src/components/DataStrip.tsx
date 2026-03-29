@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 const fundData = [
@@ -15,7 +15,7 @@ const fundData = [
 export default function DataStrip() {
   const trackRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const track = trackRef.current;
     if (!track) return;
     const width = track.scrollWidth / 2;

@@ -34,8 +34,11 @@ export function WhatIfToggle({ enabled, onToggle, regularCount, savingsAnnual }:
             What if you switched {regularCount} Regular plan{regularCount > 1 ? 's' : ''} to Direct?
           </p>
           {!enabled ? (
-            <p className="font-body text-xs" style={{ color: 'hsl(var(--text-tertiary))' }}>
-              Toggle to see how your numbers change — saves ₹{savingsAnnual.toLocaleString('en-IN')}/year
+            <p className="font-body text-xs" style={{ color: "hsl(var(--text-tertiary))" }}>
+              Toggle to see how your numbers change — saves{" "}
+              <span className="font-mono-dm tabular-nums text-text-secondary">
+                ₹{savingsAnnual.toLocaleString("en-IN")}/year
+              </span>
             </p>
           ) : (
             <p className="font-body text-xs text-positive">

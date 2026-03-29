@@ -25,6 +25,7 @@ import FirePlanner from "./pages/FirePlanner";
 import MentorPage from "./pages/MentorPage";
 import Demo from "./pages/Demo";
 import NotFound from "./pages/NotFound";
+import Noise from "@/components/reactbits/Noise";
 
 const queryClient = new QueryClient();
 
@@ -60,122 +61,133 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SessionProvider>
-        <AnalysisProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter
-              future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true,
-              }}
-            >
-            <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
+    <>
+      <QueryClientProvider client={queryClient}>
+        <SessionProvider>
+          <AnalysisProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter
+                future={{
+                  v7_startTransition: true,
+                  v7_relativeSplatPath: true,
+                }}
+              >
+                <ScrollToTop />
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
 
-              <Route
-                path="/dashboard"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <Dashboard />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeUpload />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze/processing"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeProcessing />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze/report"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeReport />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/analyze/error"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <AnalyzeError />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/tax"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <TaxWizard />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/fire"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <FirePlanner />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/mentor"
-                element={
-                  <AuthGuard>
-                    <AppLayout>
-                      <MentorPage />
-                    </AppLayout>
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/demo"
-                element={
-                  <AppLayout>
-                    <Demo />
-                  </AppLayout>
-                }
-              />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <Dashboard />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeUpload />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze/processing"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeProcessing />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze/report"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeReport />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/analyze/error"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <AnalyzeError />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/tax"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <TaxWizard />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/fire"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <FirePlanner />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/mentor"
+                    element={
+                      <AuthGuard>
+                        <AppLayout>
+                          <MentorPage />
+                        </AppLayout>
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/demo"
+                    element={
+                      <AppLayout>
+                        <Demo />
+                      </AppLayout>
+                    }
+                  />
 
-              <Route path="/app" element={<Navigate to="/dashboard" replace />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AnalysisProvider>
-      </SessionProvider>
-    </QueryClientProvider>
+                  <Route path="/app" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </AnalysisProvider>
+        </SessionProvider>
+      </QueryClientProvider>
+      <div className="pointer-events-none fixed inset-0 z-[9999]">
+        <Noise
+          patternSize={200}
+          patternScaleX={1}
+          patternScaleY={1}
+          patternRefreshInterval={3}
+          patternAlpha={8}
+        />
+      </div>
+    </>
   );
 };
 

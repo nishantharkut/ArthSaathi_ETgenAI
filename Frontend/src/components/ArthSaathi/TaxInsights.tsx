@@ -87,7 +87,7 @@ export function TaxInsights({ data }: TaxInsightsProps) {
               <p style={{ color: "hsl(var(--text-tertiary))" }}>
                 Unrealised gains (total)
               </p>
-              <p className="text-sm mt-0.5">
+              <p className="mt-0.5 font-mono-dm text-sm tabular-nums text-text-primary">
                 ₹{tax.estimates.total_unrealized_gains.toLocaleString("en-IN")}
               </p>
             </div>
@@ -95,7 +95,7 @@ export function TaxInsights({ data }: TaxInsightsProps) {
               <p style={{ color: "hsl(var(--text-tertiary))" }}>
                 Equity-style bucket (heuristic)
               </p>
-              <p className="text-sm mt-0.5">
+              <p className="mt-0.5 font-mono-dm text-sm tabular-nums text-text-primary">
                 ₹
                 {tax.estimates.equity_style_unrealized_gains.toLocaleString(
                   "en-IN",
@@ -106,7 +106,7 @@ export function TaxInsights({ data }: TaxInsightsProps) {
               <p style={{ color: "hsl(var(--text-tertiary))" }}>
                 Rough LTCG tax (illus.)
               </p>
-              <p className="text-sm mt-0.5">
+              <p className="mt-0.5 font-mono-dm text-sm tabular-nums text-text-primary">
                 ₹
                 {tax.estimates.rough_ltcg_tax_if_realized_long_term_equity.toLocaleString(
                   "en-IN",

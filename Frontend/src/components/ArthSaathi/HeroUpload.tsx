@@ -156,7 +156,7 @@ export function HeroUpload({
                   {file.name}
                 </p>
                 <p
-                  className="font-mono-dm text-xs"
+                  className="font-mono-dm text-xs tabular-nums"
                   style={{ color: "hsl(var(--text-tertiary))" }}
                 >
                   {(file.size / 1024).toFixed(0)} KB

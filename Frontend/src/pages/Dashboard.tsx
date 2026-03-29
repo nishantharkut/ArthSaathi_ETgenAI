@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useAnalysis } from "@/context/analysis-context";
 import { fetchMe } from "@/lib/auth";
@@ -39,16 +39,30 @@ export default function Dashboard() {
   const xirrColor =
     xirrRate >= 0 ? "hsl(var(--positive))" : "hsl(var(--negative))";
 
-  const insights: { text: string }[] = [];
+  const insights: ReactNode[] = [];
   if (data && typeof data.expense_summary.total_annual_drag === "number") {
-    insights.push({
-      text: `Annual expense drag: ${formatINR(data.expense_summary.total_annual_drag)}`,
-    });
+    insights.push(
+      <>
+        Annual expense drag:{" "}
+        <span className="font-mono-dm tabular-nums">
+          {formatINR(data.expense_summary.total_annual_drag)}
+        </span>
+      </>,
+    );
   }
   if (data && data.portfolio_summary.total_funds > 0) {
-    insights.push({
-      text: `${data.portfolio_summary.regular_plan_count} of ${data.portfolio_summary.total_funds} funds are regular plans`,
-    });
+    insights.push(
+      <>
+        <span className="font-mono-dm tabular-nums">
+          {data.portfolio_summary.regular_plan_count}
+        </span>{" "}
+        of{" "}
+        <span className="font-mono-dm tabular-nums">
+          {data.portfolio_summary.total_funds}
+        </span>{" "}
+        funds are regular plans
+      </>,
+    );
   }
   if (
     data &&
@@ -57,18 +71,30 @@ export default function Dashboard() {
     overlapRow.fund_a &&
     overlapRow.fund_b
   ) {
-    insights.push({
-      text: `Highest overlap: ${overlapRow.overlap.toFixed(0)}% (${shortFundName(overlapRow.fund_a)} ↔ ${shortFundName(overlapRow.fund_b)})`,
-    });
+    insights.push(
+      <>
+        Highest overlap:{" "}
+        <span className="font-mono-dm tabular-nums">
+          {overlapRow.overlap.toFixed(0)}%
+        </span>{" "}
+        ({shortFundName(overlapRow.fund_a)} ↔ {shortFundName(overlapRow.fund_b)})
+      </>,
+    );
   }
   if (
     data &&
     typeof data.expense_summary.total_potential_annual_savings === "number" &&
     data.expense_summary.total_potential_annual_savings > 0
   ) {
-    insights.push({
-      text: `Potential savings: ${formatINR(data.expense_summary.total_potential_annual_savings)}/year by switching to direct`,
-    });
+    insights.push(
+      <>
+        Potential savings:{" "}
+        <span className="font-mono-dm tabular-nums">
+          {formatINR(data.expense_summary.total_potential_annual_savings)}
+        </span>
+        /year by switching to direct
+      </>,
+    );
   }
 
   return (
@@ -130,9 +156,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <p className="font-mono mt-14 text-xs uppercase tracking-[2px] text-text-muted">
-            Also available
-          </p>
+          <p className="section-label mt-14">Also available</p>
         </>
       ) : (
         data && (
@@ -141,9 +165,7 @@ export default function Dashboard() {
               <div className="flex flex-col gap-2 border-b border-white/[0.06] pb-4 md:flex-row md:items-end md:justify-between">
                 <div>
                   <div className="h-0.5 w-8 bg-[hsl(213,60%,56%)]" aria-hidden />
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-text-muted mt-3">
-                    Snapshot
-                  </p>
+                  <p className="section-label mt-3">Snapshot</p>
                   <p className="font-syne text-xs text-text-tertiary mt-1">
                     As of last analysis in this session
                   </p>
@@ -158,29 +180,23 @@ export default function Dashboard() {
               </div>
               <div className="mt-6 grid grid-cols-2 gap-6 lg:grid-cols-4">
                 <div>
-                  <p className="font-syne text-[10px] uppercase tracking-wider text-text-muted">
-                    Total value
-                  </p>
-                  <p className="font-mono-dm mt-1 text-xl text-text-primary md:text-2xl">
+                  <p className="section-label">Total value</p>
+                  <p className="font-mono-dm mt-1 text-xl text-text-primary tabular-nums md:text-2xl">
                     {compactINR(data.portfolio_summary.total_current_value)}
                   </p>
                 </div>
                 <div>
-                  <p className="font-syne text-[10px] uppercase tracking-wider text-text-muted">
-                    XIRR
-                  </p>
+                  <p className="section-label">XIRR</p>
                   <p
-                    className="font-mono-dm mt-1 text-xl md:text-2xl"
+                    className="font-mono-dm mt-1 text-xl tabular-nums md:text-2xl"
                     style={{ color: xirrColor }}
                   >
                     {data.portfolio_xirr.display}
                   </p>
                 </div>
                 <div>
-                  <p className="font-syne text-[10px] uppercase tracking-wider text-text-muted">
-                    Health
-                  </p>
-                  <p className="font-mono-dm mt-1 text-xl text-text-primary md:text-2xl">
+                  <p className="section-label">Health</p>
+                  <p className="font-mono-dm mt-1 text-xl text-text-primary tabular-nums md:text-2xl">
                     {data.health_score.score}
                     <span className="ml-1.5 text-base font-normal text-text-secondary">
                       {data.health_score.grade}
@@ -188,10 +204,8 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div>
-                  <p className="font-syne text-[10px] uppercase tracking-wider text-text-muted">
-                    Funds
-                  </p>
-                  <p className="font-mono-dm mt-1 text-xl text-text-primary md:text-2xl">
+                  <p className="section-label">Funds</p>
+                  <p className="font-mono-dm mt-1 text-xl text-text-primary tabular-nums md:text-2xl">
                     {data.portfolio_summary.total_funds}
                   </p>
                 </div>
@@ -209,14 +223,12 @@ export default function Dashboard() {
             {insights.length > 0 ? (
               <div className="card-arth mt-8 border border-white/[0.06] p-6 md:p-8">
                 <div className="h-0.5 w-8 bg-[hsl(213,60%,56%)]" aria-hidden />
-                <p className="font-mono mt-4 text-[10px] uppercase tracking-[0.2em] text-text-muted">
-                  Key insights
-                </p>
+                <p className="section-label mt-4">Key insights</p>
                 <ol className="mt-5 space-y-4">
                   {insights.map((item, i) => (
                     <li key={i} className="flex gap-3">
                       <span
-                        className="font-mono-dm mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-[11px] text-white"
+                        className="font-mono-dm mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-[11px] tabular-nums text-white"
                         style={{
                           background: "hsl(213, 60%, 46%)",
                           borderRadius: "2px",
@@ -225,7 +237,7 @@ export default function Dashboard() {
                         {i + 1}
                       </span>
                       <span className="font-syne text-sm leading-relaxed text-text-secondary">
-                        {item.text}
+                        {item}
                       </span>
                     </li>
                   ))}
@@ -236,15 +248,13 @@ export default function Dashboard() {
         )
       )}
 
-      <p className="font-mono mt-12 text-xs uppercase tracking-[2px] text-text-muted">
-        Tools
-      </p>
+      <p className="section-label mt-12">Tools</p>
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link
           to="/tax"
           className="card-arth block border border-white/[0.06] p-5 transition-colors hover:border-white/[0.12]"
         >
-          <p className="font-mono text-[10px] text-text-muted">01</p>
+          <p className="font-mono text-[10px] tabular-nums text-text-muted">01</p>
           <div className="mt-2 h-0.5 w-full bg-[hsl(213,60%,56%)]" />
           <h3
             className="font-fraunces mt-3 text-lg text-text-primary"
@@ -260,7 +270,7 @@ export default function Dashboard() {
           to="/fire"
           className="card-arth block border border-white/[0.06] p-5 transition-colors hover:border-white/[0.12]"
         >
-          <p className="font-mono text-[10px] text-text-muted">02</p>
+          <p className="font-mono text-[10px] tabular-nums text-text-muted">02</p>
           <div className="mt-2 h-0.5 w-full bg-[hsl(44,96%,56%)]" />
           <h3
             className="font-fraunces mt-3 text-lg text-text-primary"
@@ -276,7 +286,7 @@ export default function Dashboard() {
           to="/mentor"
           className="card-arth block border border-white/[0.06] p-5 transition-colors hover:border-white/[0.12]"
         >
-          <p className="font-mono text-[10px] text-text-muted">03</p>
+          <p className="font-mono text-[10px] tabular-nums text-text-muted">03</p>
           <div className="mt-2 h-0.5 w-full bg-[hsl(160,67%,52%)]" />
           <h3
             className="font-fraunces mt-3 text-lg text-text-primary"

@@ -80,18 +80,18 @@ export function FundTable({ funds }: FundTableProps) {
                       {displaySchemeName(fund.scheme_name)}
                     </p>
                   </div>
-                  <p className="mt-0.5 pl-5 font-mono text-xs text-text-muted">
+                  <p className="mt-0.5 pl-5 font-mono text-xs tabular-nums text-text-muted">
                     {fund.is_direct ? "Direct" : "Regular"} · {fund.units.toFixed(2)}{" "}
                     units
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="font-mono text-sm text-primary-light">
+                  <p className="font-mono text-sm tabular-nums text-primary-light">
                     {compactINR(fund.current_value)}
                   </p>
                   <p
                     className={cn(
-                      "mt-0.5 font-mono text-xs",
+                      "mt-0.5 font-mono text-xs tabular-nums",
                       fund.xirr.rate >= 0
                         ? "text-[hsl(var(--positive))]"
                         : "text-[hsl(var(--negative))]",
@@ -104,7 +104,7 @@ export function FundTable({ funds }: FundTableProps) {
               {fund.expense.annual_drag_rupees != null ? (
                 <div className="flex justify-between border-t border-white/5 pt-2 text-xs">
                   <span className="font-syne text-text-muted">Annual drag</span>
-                  <span className="font-mono text-[hsl(var(--negative))]">
+                  <span className="font-mono tabular-nums text-[hsl(var(--negative))]">
                     {formatINR(fund.expense.annual_drag_rupees)}/yr
                   </span>
                 </div>
@@ -120,18 +120,18 @@ export function FundTable({ funds }: FundTableProps) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-muted">NAV</span>
-                    <span className="font-mono text-primary-light">
+                    <span className="font-mono tabular-nums text-primary-light">
                       {fund.current_nav.toFixed(4)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-muted">Invested</span>
-                    <span className="font-mono">{compactINR(fund.invested_value)}</span>
+                    <span className="font-mono tabular-nums">{compactINR(fund.invested_value)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-muted">TER</span>
                     <span
-                      className="font-mono"
+                      className="font-mono tabular-nums"
                       style={{
                         color: terColor(terAsDisplayPercent(fund.expense.estimated_ter)),
                       }}
@@ -142,7 +142,7 @@ export function FundTable({ funds }: FundTableProps) {
                   <div className="flex justify-between">
                     <span className="text-text-muted">Alpha</span>
                     <span
-                      className="font-mono"
+                      className="font-mono tabular-nums"
                       style={{
                         color: fund.benchmark
                           ? fund.benchmark.alpha >= 0
@@ -178,7 +178,7 @@ export function FundTable({ funds }: FundTableProps) {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="section-label text-xs px-6 py-3 text-left first:text-left"
+                    className="section-label px-6 py-3 text-left first:text-left"
                   >
                     {h}
                   </th>
@@ -236,11 +236,11 @@ export function FundTable({ funds }: FundTableProps) {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <p className="font-mono-dm text-sm text-primary-light">
+                        <p className="font-mono-dm text-sm tabular-nums text-primary-light">
                           {compactINR(fund.current_value)}
                         </p>
                         <p
-                          className="font-mono-dm text-xs"
+                          className="font-mono-dm text-xs tabular-nums"
                           style={{ color: "hsl(var(--text-tertiary))" }}
                         >
                           {compactINR(fund.invested_value)}
@@ -248,7 +248,7 @@ export function FundTable({ funds }: FundTableProps) {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <span
-                          className="font-mono-dm text-sm font-medium"
+                          className="font-mono-dm text-sm font-medium tabular-nums"
                           style={{
                             color:
                               fund.xirr.rate >= 0
@@ -263,7 +263,7 @@ export function FundTable({ funds }: FundTableProps) {
                         {fund.benchmark ? (
                           <div>
                             <span
-                              className="font-mono-dm text-sm font-medium"
+                              className="font-mono-dm text-sm font-medium tabular-nums"
                               style={{
                                 color:
                                   fund.benchmark.alpha >= 0
@@ -282,7 +282,7 @@ export function FundTable({ funds }: FundTableProps) {
                           </div>
                         ) : (
                           <span
-                            className="font-mono-dm text-sm"
+                            className="font-mono-dm text-sm tabular-nums"
                             style={{ color: "hsl(var(--text-tertiary))" }}
                           >
                             —
@@ -291,7 +291,7 @@ export function FundTable({ funds }: FundTableProps) {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <span
-                          className="font-mono-dm text-sm"
+                          className="font-mono-dm text-sm tabular-nums"
                           style={{
                             color: terColor(
                               terAsDisplayPercent(fund.expense.estimated_ter),
@@ -302,7 +302,7 @@ export function FundTable({ funds }: FundTableProps) {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <span className="font-mono-dm text-sm text-negative">
+                        <span className="font-mono-dm text-sm tabular-nums text-negative">
                           {formatINR(fund.expense.annual_drag_rupees)}/yr
                         </span>
                       </td>
@@ -323,9 +323,7 @@ export function FundTable({ funds }: FundTableProps) {
                         >
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                              <p className="section-label text-xs mb-2">
-                                TOP 5 HOLDINGS
-                              </p>
+                              <p className="section-label mb-2">TOP 5 HOLDINGS</p>
                               {fund.overlap.top_holdings.map((h, hi) => (
                                 <div
                                   key={hi}
@@ -335,7 +333,7 @@ export function FundTable({ funds }: FundTableProps) {
                                     {h.name}
                                   </span>
                                   <span
-                                    className="font-mono-dm text-xs"
+                                    className="font-mono-dm text-xs tabular-nums"
                                     style={{
                                       color: "hsl(var(--text-secondary))",
                                     }}
@@ -354,9 +352,7 @@ export function FundTable({ funds }: FundTableProps) {
                               )}
                             </div>
                             <div>
-                              <p className="section-label text-xs mb-2">
-                                EXPENSE BREAKDOWN
-                              </p>
+                              <p className="section-label mb-2">EXPENSE BREAKDOWN</p>
                               <div className="space-y-1">
                                 <div className="flex justify-between">
                                   <span
@@ -367,7 +363,7 @@ export function FundTable({ funds }: FundTableProps) {
                                   >
                                     Current TER
                                   </span>
-                                  <span className="font-mono-dm text-xs text-negative">
+                                  <span className="font-mono-dm text-xs tabular-nums text-negative">
                                     {terAsDisplayPercent(fund.expense.estimated_ter).toFixed(2)}%
                                   </span>
                                 </div>
@@ -380,7 +376,7 @@ export function FundTable({ funds }: FundTableProps) {
                                   >
                                     Direct TER
                                   </span>
-                                  <span className="font-mono-dm text-xs text-positive">
+                                  <span className="font-mono-dm text-xs tabular-nums text-positive">
                                     {terAsDisplayPercent(fund.expense.direct_plan_ter).toFixed(2)}%
                                   </span>
                                 </div>
@@ -393,7 +389,7 @@ export function FundTable({ funds }: FundTableProps) {
                                   >
                                     Annual Savings
                                   </span>
-                                  <span className="font-mono-dm text-xs text-positive">
+                                  <span className="font-mono-dm text-xs tabular-nums text-positive">
                                     {formatINR(
                                       fund.expense.potential_annual_savings,
                                     )}
@@ -402,17 +398,15 @@ export function FundTable({ funds }: FundTableProps) {
                               </div>
                             </div>
                             <div>
-                              <p className="section-label text-xs mb-2">
-                                HOLDING PERIOD
-                              </p>
-                              <p className="font-mono-dm text-sm text-primary-light">
+                              <p className="section-label mb-2">HOLDING PERIOD</p>
+                              <p className="font-mono-dm text-sm tabular-nums text-primary-light">
                                 {Math.round(
                                   (fund.xirr.holding_period_days / 365.25) * 10,
                                 ) / 10}{" "}
                                 years
                               </p>
                               <p
-                                className="font-body text-xs mt-1"
+                                className="font-mono-dm mt-1 text-xs tabular-nums"
                                 style={{ color: "hsl(var(--text-secondary))" }}
                               >
                                 {fund.xirr.holding_period_days} days

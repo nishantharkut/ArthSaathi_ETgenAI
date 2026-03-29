@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -8,7 +8,7 @@ export default function ProblemSection() {
   const dotsRef = useRef<HTMLDivElement>(null);
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isMobile) return;
     const ctx = gsap.context(() => {
       const track = trackRef.current;
@@ -73,9 +73,7 @@ export default function ProblemSection() {
     <div ref={sectionRef} className="overflow-hidden relative">
       {/* Header above pinned zone */}
       <div className="max-w-[1080px] mx-auto px-6 md:px-10 pt-20 pb-6">
-        <p className="font-syne font-medium text-xs text-text-tertiary uppercase tracking-[3px] mb-3">
-          THE PROBLEM
-        </p>
+        <p className="section-label mb-3">The problem</p>
         <h2
           className="font-fraunces text-text-primary text-[30px] leading-tight"
           style={{ fontVariationSettings: "'opsz' 72, 'wght' 700" }}
@@ -88,11 +86,9 @@ export default function ProblemSection() {
         {/* Panel 1 */}
         <div className="problem-panel w-screen h-screen flex items-center px-[5vw]">
           <div className="max-w-[420px]">
-            <p className="font-mono text-xs text-text-muted tracking-[2px] mb-4">
-              Finding 01
-            </p>
+            <p className="section-label mb-4">Finding 01</p>
             <p
-              className="p1-num font-mono font-bold text-[108px] text-negative leading-none"
+              className="p1-num font-mono text-[108px] font-bold tabular-nums leading-none text-negative"
               data-cursor="loss"
             >
               0.00%
@@ -101,8 +97,10 @@ export default function ProblemSection() {
               Average TER on regular plan mutual funds
             </p>
             <div className="w-12 h-px bg-border-subtle my-5" />
-            <p className="font-syne font-medium text-base text-text-primary max-w-[360px]">
-              That's ₹18,200 gone per year on every ₹10 lakh.
+            <p className="max-w-[360px] font-syne text-base font-medium text-text-primary">
+              That&apos;s{" "}
+              <span className="font-mono-dm tabular-nums">₹18,200</span> gone per year on every{" "}
+              <span className="font-mono-dm tabular-nums">₹10 lakh</span>.
             </p>
             <p className="font-syne text-[13px] text-text-tertiary mt-2">
               Silently deducted. Not once shown on your statement.
@@ -124,9 +122,7 @@ export default function ProblemSection() {
         {/* Panel 2 */}
         <div className="problem-panel w-screen h-screen flex items-center justify-center">
           <div className="text-center">
-            <p className="font-mono text-xs text-text-muted tracking-[2px] mb-6">
-              Finding 02
-            </p>
+            <p className="section-label mb-6">Finding 02</p>
             <svg viewBox="0 0 280 180" width="240" className="mx-auto">
               <defs>
                 <clipPath id="overlap">
@@ -178,7 +174,7 @@ export default function ProblemSection() {
               </text>
             </svg>
             <p
-              className="font-mono font-semibold text-[26px] text-warning mt-4"
+              className="mt-4 font-mono text-[26px] font-semibold tabular-nums text-warning"
               data-cursor="loss"
             >
               45.2% overlap
@@ -198,11 +194,9 @@ export default function ProblemSection() {
         {/* Panel 3 */}
         <div className="problem-panel w-screen h-screen flex items-center justify-end px-[5vw]">
           <div className="text-right max-w-[400px]">
-            <p className="font-mono text-xs text-text-muted tracking-[2px] mb-4">
-              Finding 03
-            </p>
+            <p className="section-label mb-4">Finding 03</p>
             <p
-              className="font-mono font-bold text-[72px] text-negative leading-none"
+              className="font-mono text-[72px] font-bold tabular-nums leading-none text-negative"
               data-cursor="loss"
             >
               ₹6.45L
@@ -212,7 +206,7 @@ export default function ProblemSection() {
             </p>
             <div className="mb-7" />
             <p
-              className="font-mono font-bold text-[72px] text-negative leading-none"
+              className="font-mono text-[72px] font-bold tabular-nums leading-none text-negative"
               data-cursor="loss"
             >
               ₹22.6L
@@ -253,9 +247,7 @@ export default function ProblemSection() {
 function MobileProblem() {
   return (
     <div className="py-14 px-6">
-      <p className="font-syne font-medium text-xs text-text-tertiary uppercase tracking-[3px] mb-3">
-        THE PROBLEM
-      </p>
+      <p className="section-label mb-3">The problem</p>
       <h2
         className="font-fraunces text-text-primary text-[26px] leading-tight mb-10"
         style={{ fontVariationSettings: "'opsz' 72, 'wght' 700" }}
@@ -265,11 +257,9 @@ function MobileProblem() {
 
       <div className="space-y-14">
         <div>
-          <p className="font-mono text-xs text-text-muted tracking-[2px] mb-3">
-            Finding 01
-          </p>
+          <p className="section-label mb-3">Finding 01</p>
           <p
-            className="font-mono font-bold text-[56px] text-negative leading-none"
+            className="font-mono text-[56px] font-bold tabular-nums leading-none text-negative"
             data-cursor="loss"
           >
             1.82%
@@ -277,16 +267,16 @@ function MobileProblem() {
           <p className="font-syne text-sm text-text-secondary mt-3">
             Average TER on regular plan mutual funds
           </p>
-          <p className="font-syne font-medium text-base text-text-primary mt-4">
-            That's ₹18,200 gone per year on every ₹10 lakh.
+          <p className="mt-4 font-syne text-base font-medium text-text-primary">
+            That&apos;s{" "}
+            <span className="font-mono-dm tabular-nums">₹18,200</span> gone per year on every{" "}
+            <span className="font-mono-dm tabular-nums">₹10 lakh</span>.
           </p>
         </div>
         <div>
-          <p className="font-mono text-xs text-text-muted tracking-[2px] mb-3">
-            Finding 02
-          </p>
+          <p className="section-label mb-3">Finding 02</p>
           <p
-            className="font-mono font-semibold text-[56px] text-warning leading-none"
+            className="font-mono text-[56px] font-semibold tabular-nums leading-none text-warning"
             data-cursor="loss"
           >
             45.2%
@@ -296,11 +286,9 @@ function MobileProblem() {
           </p>
         </div>
         <div>
-          <p className="font-mono text-xs text-text-muted tracking-[2px] mb-3">
-            Finding 03
-          </p>
+          <p className="section-label mb-3">Finding 03</p>
           <p
-            className="font-mono font-bold text-[56px] text-negative leading-none"
+            className="font-mono text-[56px] font-bold tabular-nums leading-none text-negative"
             data-cursor="loss"
           >
             ₹22.6L

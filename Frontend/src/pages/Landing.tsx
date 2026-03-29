@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CursorReticle from "@/components/CursorReticle";
 import Navbar from "@/components/Navbar";
@@ -15,10 +15,14 @@ import Footer from "@/components/Footer";
 import LiveFeed from "@/components/LiveFeed";
 
 export default function Index() {
-  useEffect(() => {
+  /**
+   * GSAP pin/revert mutates the DOM. If that runs while React is unmounting the
+   * landing tree, React throws removeChild NotFoundError. Cleanup in layout phase
+   * and use kill(false) so we unregister triggers without pin-revert fighting React.
+   */
+  useLayoutEffect(() => {
     return () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-      ScrollTrigger.refresh();
+      ScrollTrigger.getAll().forEach((st) => st.kill(false));
     };
   }, []);
 

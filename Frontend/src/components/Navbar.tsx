@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -28,7 +28,7 @@ export default function Navbar() {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
 
@@ -84,7 +84,7 @@ export default function Navbar() {
     });
 
     return () => {
-      trigger.kill();
+      trigger.kill(false);
       tl.kill();
       gsap.killTweensOf(nav);
     };

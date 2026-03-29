@@ -120,7 +120,9 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
           <div className="space-y-6">
             {elss > 0 ? (
               <p className="font-syne text-xs text-text-secondary">
-                ELSS in portfolio (toward 80C cap): ₹{(elss / 100000).toFixed(2)}L auto-included
+                ELSS in portfolio (toward 80C cap):{" "}
+                <span className="font-mono-dm tabular-nums">₹{(elss / 100000).toFixed(2)}L</span>{" "}
+                auto-included
               </p>
             ) : null}
 
@@ -223,16 +225,28 @@ export function TaxRegimeCompare({ data }: TaxRegimeCompareProps) {
               <>
                 <div className="rounded-lg px-4 py-3" style={recBannerStyle}>
                   <span className="font-syne text-sm font-medium" style={{ color: recTextColor }}>
-                    Lower tax: {recNew ? "New regime" : "Old regime"} · Save {result.savings_display}
+                    Lower tax: {recNew ? "New regime" : "Old regime"} · Save{" "}
+                    <span className="font-mono-dm tabular-nums">{result.savings_display}</span>
                   </span>
                 </div>
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                      <XAxis dataKey="name" tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 11 }} />
+                      <XAxis
+                        dataKey="name"
+                        tick={{
+                          fill: "hsl(var(--text-secondary))",
+                          fontSize: 11,
+                          fontFamily: "DM Mono, ui-monospace, monospace",
+                        }}
+                      />
                       <YAxis
-                        tick={{ fill: "hsl(var(--text-tertiary))", fontSize: 10 }}
+                        tick={{
+                          fill: "hsl(var(--text-secondary))",
+                          fontSize: 10,
+                          fontFamily: "DM Mono, ui-monospace, monospace",
+                        }}
                         tickFormatter={(v) => `₹${(Number(v) / 100000).toFixed(1)}L`}
                       />
                       <Tooltip

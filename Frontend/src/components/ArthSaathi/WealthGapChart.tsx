@@ -98,10 +98,10 @@ export function WealthGapChart({
         style={{ background: "hsl(var(--bg-secondary))" }}
       >
         <p className="font-syne text-text-muted">Year {row.year}</p>
-        <p className="font-mono-dm mt-1 text-[hsl(160,67%,52%)]">
+        <p className="font-mono-dm mt-1 tabular-nums text-[hsl(160,67%,52%)]">
           Optimized {compactINR(row.optimized)}
         </p>
-        <p className="font-mono-dm mt-0.5 text-[hsl(213,60%,56%)]">
+        <p className="font-mono-dm mt-0.5 tabular-nums text-[hsl(213,60%,56%)]">
           Current {compactINR(row.current)}
         </p>
       </div>
@@ -130,7 +130,7 @@ export function WealthGapChart({
       </p>
 
       {/* Gap display */}
-      <p className="font-mono-dm text-[32px] font-medium text-negative mt-4">
+      <p className="font-mono-dm text-[32px] font-medium tabular-nums text-negative mt-4">
         {compactINR(gap)}{" "}
         <span
           className="font-body text-base font-normal"
@@ -192,7 +192,7 @@ export function WealthGapChart({
               tick={{
                 fontSize: 11,
                 fontFamily: "DM Mono, ui-monospace, monospace",
-                fill: "hsl(var(--text-tertiary))",
+                fill: "hsl(var(--text-secondary))",
               }}
               tickFormatter={(v) => `Y${v}`}
             />
@@ -202,7 +202,7 @@ export function WealthGapChart({
               tick={{
                 fontSize: 11,
                 fontFamily: "DM Mono, ui-monospace, monospace",
-                fill: "hsl(var(--text-tertiary))",
+                fill: "hsl(var(--text-secondary))",
               }}
               tickFormatter={(v) => axisCompactINR(Number(v))}
               width={52}
@@ -241,7 +241,7 @@ export function WealthGapChart({
             1 year
           </span>
           <span
-            className="font-mono-dm text-xs"
+            className="font-mono-dm text-xs tabular-nums"
             style={{ color: "hsl(var(--accent))" }}
           >
             {years} years
@@ -267,15 +267,23 @@ export function WealthGapChart({
         />
       </div>
 
-      <p
-        className="font-body text-xs mt-4"
-        style={{ color: "hsl(var(--text-tertiary))" }}
-      >
-        Assumes current XIRR of {(assumptions.current_xirr * 100).toFixed(2)}%,
-        optimized XIRR of {(assumptions.optimized_xirr * 100).toFixed(2)}% after
-        TER savings of {(assumptions.ter_savings_applied * 100).toFixed(2)}% and
-        alpha improvement of{" "}
-        {(assumptions.alpha_improvement_applied * 100).toFixed(2)}%
+      <p className="font-body mt-4 text-xs" style={{ color: "hsl(var(--text-secondary))" }}>
+        Assumes current XIRR of{" "}
+        <span className="font-mono-dm tabular-nums">
+          {(assumptions.current_xirr * 100).toFixed(2)}%
+        </span>
+        , optimized XIRR of{" "}
+        <span className="font-mono-dm tabular-nums">
+          {(assumptions.optimized_xirr * 100).toFixed(2)}%
+        </span>{" "}
+        after TER savings of{" "}
+        <span className="font-mono-dm tabular-nums">
+          {(assumptions.ter_savings_applied * 100).toFixed(2)}%
+        </span>{" "}
+        and alpha improvement of{" "}
+        <span className="font-mono-dm tabular-nums">
+          {(assumptions.alpha_improvement_applied * 100).toFixed(2)}%
+        </span>
       </p>
     </div>
   );

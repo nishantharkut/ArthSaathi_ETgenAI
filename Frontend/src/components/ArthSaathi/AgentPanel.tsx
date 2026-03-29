@@ -372,12 +372,13 @@ export function AgentPanel({
           style={{ color: "hsl(var(--text-secondary))" }}
         >
           <span
-            className="font-mono-dm"
+            className="font-mono-dm tabular-nums"
             style={{ color: "hsl(var(--positive))" }}
           >
             9/9
           </span>{" "}
-          agents completed · {totalTime}s
+          agents completed ·{" "}
+          <span className="font-mono-dm tabular-nums">{totalTime}s</span>
         </span>
         <div className="flex gap-1.5">
           {agents.map((a) => (
@@ -462,7 +463,7 @@ export function AgentPanel({
             </span>
             {agent.time && (
               <span
-                className="font-mono-dm text-xs flex-shrink-0"
+                className="font-mono-dm flex-shrink-0 text-xs tabular-nums"
                 style={{ color: "hsl(var(--text-tertiary))" }}
               >
                 {agent.time}
@@ -485,7 +486,7 @@ export function AgentPanel({
         />
       </div>
       <p
-        className="font-mono-dm text-xs mt-2 text-right"
+        className="font-mono-dm mt-2 text-right text-xs tabular-nums"
         style={{ color: "hsl(var(--text-tertiary))" }}
       >
         {Math.round(progress)}%

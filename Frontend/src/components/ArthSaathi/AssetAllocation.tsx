@@ -99,7 +99,7 @@ export function AssetAllocation({
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="font-mono-dm text-2xl font-medium text-primary-light">
+              <span className="font-mono-dm text-2xl font-medium tabular-nums text-primary-light">
                 {totalPct}%
               </span>
               <span className="font-syne mt-0.5 text-[10px] uppercase tracking-wider text-text-muted">
@@ -117,7 +117,8 @@ export function AssetAllocation({
                   className="h-2 w-2 shrink-0 rounded-sm"
                   style={{ background: d.color }}
                 />
-                {d.name} <span className="font-mono-dm">{d.value}%</span>
+                {d.name}{" "}
+                <span className="font-mono-dm tabular-nums">{d.value}%</span>
               </span>
             ))}
           </div>
@@ -148,7 +149,7 @@ export function AssetAllocation({
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="font-mono-dm text-xl font-medium text-primary-light">
+              <span className="font-mono-dm text-xl font-medium tabular-nums text-primary-light">
                 {planTotal > 0 ? `${regularCount}:${directCount}` : "—"}
               </span>
               <span className="font-syne mt-0.5 text-[10px] uppercase tracking-wider text-text-muted">
@@ -167,7 +168,7 @@ export function AssetAllocation({
                   style={{ background: d.color }}
                 />
                 {d.name}{" "}
-                <span className="font-mono-dm">{d.value} funds</span>
+                <span className="font-mono-dm tabular-nums">{d.value} funds</span>
               </span>
             ))}
           </div>
